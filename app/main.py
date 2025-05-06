@@ -1,7 +1,7 @@
-from lexer import Lexer
-from parser import Parser
-from semantic_analyzer import SemanticAnalyzer
-from code_generator import Interpreter
+from .lexer import Lexer
+from .parser import Parser
+from .semantic_analyzer import SemanticAnalyzer
+from .code_generator import Interpreter
 
 def run(source_code):
     lexer = Lexer(source_code)
@@ -18,6 +18,10 @@ def run(source_code):
     print("Output:", result)
 
 if __name__ == "__main__":
-    with open("input.rpal", "r") as f:
-        code = f.read()
-    run(code)
+    # with open("input.rpal", "r") as f:
+    #     code = f.read()
+    # run(code)
+    test_code = "\"Hello, World!\""
+    tokens = Lexer(test_code).tokenize()
+    for token in tokens:
+        print(token)
