@@ -4,6 +4,7 @@ This project is a compiler for **RPAL (Right-reference Pure Applicative Language
 
 ## 🧩 Project Structure
 
+```bash
 RPAL-COMPILER/
 ├── app/
 │ ├── ast_nodes.py # Defines AST node structures
@@ -23,6 +24,7 @@ RPAL-COMPILER/
 │
 ├── .gitignore
 └── README.md
+```
 
 
 
@@ -42,18 +44,18 @@ python3 app/main.py input.rpal
 ```
 
 
-🛠️ Features
+## 🛠️ Features
 
 Lexical Analysis — Converts source code into tokens.
 Parsing — Constructs an AST from token stream.
 Semantic Analysis — Ensures type rules and bindings.
 Code Generation — Outputs intermediate or target code.
 
-📦 Dependencies
+## 📦 Dependencies
 
 This project uses pure Python. No external libraries are required.
 
-🧪 Testing
+## 🧪 Testing
 
 Unit tests are included for all major components:
 
