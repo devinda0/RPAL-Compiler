@@ -20,7 +20,7 @@ RPAL-COMPILER/
 │ ├── test_code_generator.py
 │ ├── test_lexer.py
 │ ├── test_parser.py
-│ └── test_sematic.py # Note: Consider renaming to test_semantic.py
+│ └── test_semantic.py 
 │
 ├── .gitignore
 └── README.md
