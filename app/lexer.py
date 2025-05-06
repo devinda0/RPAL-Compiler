@@ -67,15 +67,27 @@ class Lexer:
 
     def __extract_string(self, start: int):
         end = start
+        extracted_string = ""
         if self.__source[start] == '"':
             end += 1
             while end < len(self.__source) and self.__source[end] != '"':
                 if self.__source[end] == "\\":
-                    end += 2
-                else:
                     end += 1
-            token_value = self.__source[start + 1:end]
-            self.__tokens.append(Token(token_value, "STRING"))
+                    if end < len(self.__source):
+                        if self.__source[end] == "n":
+                            extracted_string += "\n"
+                        elif self.__source[end] == "t":
+                            extracted_string += "\t"
+                        elif self.__source[end] == "\\":
+                            extracted_string += "\\"
+                        elif self.__source[end] == '"':
+                            extracted_string += '"'
+                        else:
+                            extracted_string += self.__source[end]
+                else:
+                    extracted_string += self.__source[end]
+                end += 1
+            self.__tokens.append(Token(extracted_string, "STRING"))
             end += 1
             return end
         else:

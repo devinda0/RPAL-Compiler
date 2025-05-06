@@ -21,7 +21,7 @@ if __name__ == "__main__":
     # with open("input.rpal", "r") as f:
     #     code = f.read()
     # run(code)
-    test_code = "\"Hello, World!\""
+    test_code = "'''Hello, World!'''"
     tokens = Lexer(test_code).tokenize()
     for token in tokens:
         print(token)

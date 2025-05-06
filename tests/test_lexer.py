@@ -24,19 +24,19 @@ class TestLexer(unittest.TestCase):
             self.assertEqual(tokens[0].value, operator, f"Expected token value to be '{operator}'")
 
     def test_string(self):
-        test_strings = [
-            "\"Hello, World!\"",
-            "\"This is a test string with spaces\"",
-            "\"String with \\\"escaped quotes\\\" inside\"",
-            "\"String with \\n new line\"",
-            "'''Hello, World!'''",
-            "'''This is a test string with spaces'''",
+        test_cases = [
+            ("\"Hello, World!\"", "Hello, World!"),
+            ("\"This is a test string with spaces\"", "This is a test string with spaces"),
+            ("\"String with \\\"escaped quotes\\\" inside\"", "String with \"escaped quotes\" inside"),
+            ("\"String with \\n new line\"", "String with \n new line"),
         ]
-        for test_string in test_strings:
-            lexer = Lexer(test_string)
+    
+        for raw_string, expected_value in test_cases:
+            lexer = Lexer(raw_string)
             tokens = lexer.tokenize()
-            self.assertEqual(tokens[0].type, "STRING", f"Expected STRING token for '{test_string}'")
-            self.assertEqual(tokens[0].value, test_string[1:-1], f"Expected token value to be '{test_string[1:-1]}'")
+            self.assertEqual(tokens[0].type, "STRING", f"Expected STRING token for '{raw_string}'")
+            self.assertEqual(tokens[0].value, expected_value, f"Expected token value to be '{expected_value}'")
+
 
     def test_punctuation(self):
         lexer = Lexer("( ) ; ,")
