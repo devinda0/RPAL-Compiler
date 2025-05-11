@@ -3,7 +3,7 @@ from app.token import Token
 class Lexer:
     __letters = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
     __digits = "0123456789"
-    __operators = "+-*<>&.@/:=~|$!#%^_[]{}\"'?"
+    __operators = "+-*<>&.@:=~|$!#%^_[]{}?"  # ' , " , / are not included
     __whitespace = " \t\n\r"
     __punction = ",;()"
     __keywords = {
@@ -67,15 +67,27 @@ class Lexer:
 
     def __extract_string(self, start: int):
         end = start
+        extracted_string = ""
         if self.__source[start] == '"':
             end += 1
             while end < len(self.__source) and self.__source[end] != '"':
                 if self.__source[end] == "\\":
-                    end += 2
-                else:
                     end += 1
-            token_value = self.__source[start + 1:end]
-            self.__tokens.append(Token(token_value, "STRING"))
+                    if end < len(self.__source):
+                        if self.__source[end] == "n":
+                            extracted_string += "\n"
+                        elif self.__source[end] == "t":
+                            extracted_string += "\t"
+                        elif self.__source[end] == "\\":
+                            extracted_string += "\\"
+                        elif self.__source[end] == '"':
+                            extracted_string += '"'
+                        else:
+                            extracted_string += self.__source[end]
+                else:
+                    extracted_string += self.__source[end]
+                end += 1
+            self.__tokens.append(Token(extracted_string, "STRING"))
             end += 1
             return end
         else:
@@ -92,15 +104,12 @@ class Lexer:
             raise ValueError("Invalid punctuation")
         
     
-    def __extract_comment(self, start: int):
+    def __delete_comment(self, start: int):
         end = start
         while end < len(self.__source) and self.__source[end] != "\n":
             end += 1
-        token_value = self.__source[start:end]
-        self.__tokens.append(Token(token_value, "COMMENT"))
         return end
     
-
     def tokenize(self):
         index = 0
         while index < len(self.__source):
@@ -119,7 +128,7 @@ class Lexer:
                 index = self.__extract_punction(index)
             elif char == "/":
                 if index + 1 < len(self.__source) and self.__source[index + 1] == "/":
-                    index = self.__extract_comment(index)
+                    index = self.__delete_comment(index)
                 else:
                     raise ValueError("Invalid comment")
             else:
