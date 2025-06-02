@@ -27,7 +27,8 @@ if __name__ == "__main__":
     # for token in tokens:
     #     print(token)
 
-    tokens = [Token(5, "INTEGER")]
+    code = "let x = 2 within y = x + 4 in y"
+    tokens = Lexer(code).tokenize()
     parser = Parser(tokens)
     ast = parser.parse()
-    print(ast)
+    print(ast.evaluate({}))  # Should output 8

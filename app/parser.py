@@ -333,7 +333,6 @@ class Parser:
                 Ats.append((self._parse_At(), '+'))  # Append the next At with '+' operator
             elif op_token.value == "-":
                 self._consume("-")
-                self._parse_At()
                 Ats.append((self._parse_At(), '-'))  # Append the next At with '-' operator
         
         if len(Ats) == 1:
@@ -541,7 +540,7 @@ class Parser:
 
             if peek and peek.value == ",":
                 self._consume(",")
-                Vls:list[ASTNode] = [RandNode("IDENTIFIER", identifier)] + self._parse_Vl
+                Vls:list[ASTNode] = [RandNode("IDENTIFIER", identifier)] + self._parse_Vl()
                 self._consume("=")
                 E:ASTNode = self._parse_E()
                 return EqualNode(Vls, E)  # Return an EqualNode with the list of identifiers and the expression
