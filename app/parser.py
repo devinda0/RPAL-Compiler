@@ -1,4 +1,23 @@
 from .token import Token
+from .ast_nodes import (
+    ASTNode,  # Assuming you have a base ASTNode class in ast_nodes.py
+    LetNode,
+    LambdaNode,
+    WhereNode,
+    TauNode,
+    AugNode,
+    ArrowNode,
+    OperatorNode,
+    AtNode,
+    GammaNode,
+    RandNode,
+    WithinNode,
+    AndNode,
+    RecNode,
+    FcnFormNode,
+    EqualNode,
+)
+
 # Assuming you have a generic Node class in ast_nodes.py
 # If not, you'll need to create one or adapt _build_node and its calls.
 # Example:
@@ -8,7 +27,8 @@ from .token import Token
 #         self.children = children if children is not None else []
 #     def __repr__(self):
 #         return f"Node({self.value}, {self.children})"
-from .ast_nodes import ASTNode # Or your specific base/generic node class
+# from .ast_nodes import ASTNode # Or your specific base/generic node class
+
 
 class Parser:
     def __init__(self, tokens: list[Token]):
@@ -66,7 +86,7 @@ class Parser:
             # For now, let's assume an empty program is not valid and would be caught by _parse_E.
              pass
 
-        self._parse_E() # Start with the top-level grammar rule E
+        return self._parse_E() # Start with the top-level grammar rule E
 
         if len(self.ast_stack) == 1:
             return self.ast_stack.pop()
@@ -102,16 +122,17 @@ class Parser:
 
         if token.value == "let":
             self._consume("let")
-            self._parse_D()
+            D:ASTNode =self._parse_D()
             self._consume("in")
-            self._parse_E()
-            self._build_node("let", 2)
+            E:ASTNode =self._parse_E()
+            return LetNode(D, E)
         elif token.value == "fn":
             self._consume("fn")
             n = 0
+            Vb:list[ASTNode] = []
             # Vb+ means one or more Vb
             while self._peek() and (self._peek().type == "IDENTIFIER" or self._peek().value == "("): 
-                self._parse_Vb()
+                Vb += self._parse_Vb()
                 n += 1
             if n == 0:
                 err_token = self._peek()
@@ -119,78 +140,123 @@ class Parser:
                 raise SyntaxError(f"Syntax error in line {line}: At least one variable binding (IDENTIFIER or '(') expected after 'fn'")
             
             self._consume(".")
-            self._parse_E()
-            self._build_node("lambda", n + 1)
+            E:ASTNode = self._parse_E()
+            return LambdaNode(Vb, E) 
         else:
-            self._parse_Ew()
+            return self._parse_Ew()
 
     def _parse_Ew(self):
         """ Parses Ew.
         Ew -> T ('where' Dr)?
         """
-        self._parse_T()
+        T:ASTNode = self._parse_T()
         token = self._peek()
         if token and token.value == "where":
             self._consume("where")
-            self._parse_Dr()
-            self._build_node("where", 2)  
+            Dr:ASTNode = self._parse_Dr()
+            return WhereNode(T, Dr)
+        else:
+            # If no 'where', just return T
+            return T
         
     def _parse_T(self):     
         """ Parses T.
         T -> Ta (',' Ta)*
         """
-        self._parse_Ta()
+        Tas:list[ASTNode] = []
+        Tas.append(self._parse_Ta())
         n = 0
         while self._peek() and self._peek().value == ",":
             self._consume(",")
-            self._parse_Ta()
+            Tas.append(self._parse_Ta())
             n += 1
         if n > 0:
-            self._build_node("tau", n + 1)
+            return TauNode(Tas)  # If multiple Tas, return a TauNode with the list of Tas
+        else:
+            return Tas[0]  # If only one Ta, return it directly
         
     def _parse_Ta(self):  
         """ Parses Ta.
         Ta -> Tc ('aug' Tc)*
         """
-        self._parse_Tc()
+        Tcs:list[ASTNode] = []
+        Tcs.append(self._parse_Tc())
+
         while self._peek() and self._peek().value == "aug":
             self._consume("aug")
-            self._parse_Tc()
-            self._build_node("aug", 2)  
+            Tcs.append(self._parse_Tc())
+        
+        if len(Tcs) > 1:
+            currentNode = OperatorNode("aug", Tcs[-2], Tcs[-1])
+            Tcs = Tcs[:-2]  # Remove the last two nodes
+            for Ta in reversed(Tcs):
+                currentNode = OperatorNode("aug", Ta, currentNode)
+            return currentNode  # Return the binary operation node for multiple Tcs
+        elif len(Tcs) == 1:
+            return Tcs[0]
+        else:
+            raise SyntaxError("Syntax error: Expected at least one Tc in Ta.")
         
     def _parse_Tc(self):   
         """ Parses Tc.
         Tc -> B ('->' Tc '|' Tc)?
         """
-        self._parse_B()
+        B:ASTNode = self._parse_B()
         token = self._peek()
         if token and token.value == "->":  
             self._consume("->")
-            self._parse_Tc()
+            true:ASTNode = self._parse_Tc()
             self._consume("|")
-            self._parse_Tc()
-            self._build_node("->", 3)
+            false:ASTNode = self._parse_Tc()
+            
+            return ArrowNode(B, true, false)  # Return an ArrowNode with B, true, and false
+        else:
+            # If no '->', just return B
+            return B
             
     def _parse_B(self):
         """ Parses B.
         B -> Bt ('or' Bt)*
         """
-        self._parse_Bt()
+        Bts:list[ASTNode] = []
+        Bts.append(self._parse_Bt())
         while self._peek() and self._peek().value == "or":
             self._consume("or")
             self._parse_Bt()
-            self._build_node("or", 2) 
+        
+        if len(Bts) > 1:
+            currentNode = OperatorNode("or", Bts[-2], Bts[-1])
+            Bts = Bts[:-2]
+            for B in reversed(Bts):
+                currentNode = OperatorNode("or", B, currentNode)
+            return currentNode  # Return the binary operation node for multiple Bts
+        elif len(Bts) == 1:
+            return Bts[0]
+        else:
+            raise SyntaxError("Syntax error: Expected at least one Bt in B.")
 
     def _parse_Bt(self):    
         """ Parses Bt.
         Bt -> Bs ('&' Bs)*
         """
-        self._parse_Bs()
+        Bss:list[ASTNode] = []
+        Bss.append(self._parse_Bs())
         while self._peek() and self._peek().value == "&":
             self._consume("&")
-            self._parse_Bs()
-            self._build_node("&", 2)
-        
+            Bss.append(self._parse_Bs())
+
+        if len(Bss) > 1:
+            currentNode = OperatorNode("&", Bss[-2], Bss[-1])
+            Bss = Bss[:-2]
+            for B in reversed(Bss):
+                currentNode = OperatorNode("&", B, currentNode)
+            return currentNode  # Return the binary operation node for multiple Bss
+        elif len(Bss) == 1:
+            return Bss[0]
+        else:
+            raise SyntaxError("Syntax error: Expected at least one Bs in Bt.")
+
+
     def _parse_Bs(self):
         """ Parses Bs.
         Bs -> 'not' Bp | Bp
@@ -198,16 +264,16 @@ class Parser:
         token = self._peek()
         if token and token.value == "not":
             self._consume("not")
-            self._parse_Bp()
-            self._build_node("not", 1)
+            Bp:ASTNode = self._parse_Bp()
+            return OperatorNode("not", Bp, None)  # Return a unary 'not' operation node
         else:
-            self._parse_Bp()
+            return self._parse_Bp()
         
     def _parse_Bp(self):           
         """ Parses Bp (Boolean with comparisons).
         Bp -> A (('gr' | '>') A | ('ge' | '>=') A | ... | 'ne' A)?
         """
-        self._parse_A()
+        firstA:ASTNode = self._parse_A()
         token = self._peek()
         if token:
             op_value = None
@@ -230,11 +296,16 @@ class Parser:
             elif token.value == "ne":
                 op_value = token.value
                 node_name = "ne"
-            
+
             if op_value:
                 self._consume(op_value) # Consume the specific operator token
-                self._parse_A()
-                self._build_node(node_name, 2)
+                secondA:ASTNode = self._parse_A()
+                return OperatorNode(node_name, firstA, secondA)  # Return a binary operation node
+            else:
+                # If no comparison operator, just return the first A
+                return firstA
+        else:
+            return firstA
 
     def _parse_A(self):
         """ Parses A (Arithmetic expressions: +, -).
@@ -249,78 +320,132 @@ class Parser:
             elif token.value == "-":
                 self._consume("-")
                 is_negated = True
-        
-        self._parse_At()
+                
+        firstAt:ASTNode = self._parse_At()
         if is_negated:
-            self._build_node("neg", 1) # Unary negation
+            firstAt = OperatorNode("neg", firstAt, None)  # Negate the first At if unary minus was used
             
+        Ats:list[tuple[ASTNode, str]] = [(firstAt, '+')]   # Start with the first At
         while self._peek() and (self._peek().value == "+" or self._peek().value == "-"):
             op_token = self._peek()
             if op_token.value == "+":
                 self._consume("+")
-                self._parse_At()
-                self._build_node("+", 2)
+                Ats.append((self._parse_At(), '+'))  # Append the next At with '+' operator
             elif op_token.value == "-":
                 self._consume("-")
                 self._parse_At()
-                self._build_node("-", 2)
-    
+                Ats.append((self._parse_At(), '-'))  # Append the next At with '-' operator
+        
+        if len(Ats) == 1:
+            return Ats[0][0]
+        elif len(Ats) > 1:
+            # If there are multiple Ats, we need to combine them into a binary operation tree
+            current_node = Ats[-1][0]
+            for i in range(len(Ats) - 2, -1, -1):
+                if Ats[i+1][1] == '+':
+                    current_node = OperatorNode("+", Ats[i][0], current_node)
+                elif Ats[i+1][1] == '-':
+                    current_node = OperatorNode("-", Ats[i][0], current_node)
+
+            return current_node  # Return the combined binary operation node
+        else:
+            raise SyntaxError("Syntax error: Expected at least one At in A.")
+
+
     def _parse_At(self):
         """ Parses At (Arithmetic terms: *, /).
         At -> Af (('*' | '/') Af)*
         """
-        self._parse_Af()
+        Afs:list[tuple[ASTNode, str]] = []
+        Afs.append((self._parse_Af(),''))  # Start with the first Af
         while self._peek() and (self._peek().value == "*" or self._peek().value == "/"):
             op_token = self._peek()
             if op_token.value == "*":
                 self._consume("*")
-                self._parse_Af()
-                self._build_node("*", 2)
+                Afs.append((self._parse_Af(), '*'))  # Append the next Af with '*' operator
             elif op_token.value == "/":
                 self._consume("/")
-                self._parse_Af()
-                self._build_node("/", 2)
+                Afs.append((self._parse_Af(), '/'))  # Append the next Af with '/' operator
+            
+        if len(Afs) == 1:
+            return Afs[0][0]
+        elif len(Afs) > 1:
+            # If there are multiple Afs, we need to combine them into a binary operation tree
+            current_node = Afs[-1][0]
+            for i in range(len(Afs) - 2, -1, -1):
+                if Afs[i+1][1] == '*':
+                    current_node = OperatorNode("*", Afs[i][0], current_node)
+                elif Afs[i+1][1] == '/':
+                    current_node = OperatorNode("/", Afs[i][0], current_node)
+
+            return current_node
+        else:
+            raise SyntaxError("Syntax error: Expected at least one Af in At.")
 
     def _parse_Af(self):    
         """ Parses Af (Arithmetic factors: exponentiation).
         Af -> Ap ('**' Af)?
         """
-        self._parse_Ap()
+        firstAp:ASTNode = self._parse_Ap()
         if self._peek() and self._peek().value == "**":     
             self._consume("**")
-            self._parse_Af()
-            self._build_node("**", 2)
+            return OperatorNode("**", firstAp, self._parse_Ap())  # Return a binary operation node for exponentiation
+        else:
+            # If no exponentiation, just return the first Ap
+            return firstAp
  
     def _parse_Ap(self):
         """ Parses Ap (Atomic power operand, function application with @).
         Ap -> R ('@' <IDENTIFIER> R)* 
         """
-        self._parse_R()
+        firstR:ASTNode = self._parse_R()
+        Ats:list[tuple[ASTNode, ASTNode|None]] = [(firstR, None)]  # Start with the first R, no identifier yet
+
         while self._peek() and self._peek().value == "@":
             self._consume("@")
             id_token = self._peek()
             if id_token and id_token.type == "IDENTIFIER":
-                # Build node for the identifier being applied
-                self._build_node(f"<ID:{id_token.value}>", 0)
+                identifier = RandNode("IDENTIFIER", id_token.value)
                 self._consume(expected_type="IDENTIFIER")
-                self._parse_R()
-                self._build_node("@", 3) # Pops R, ID, and the R before @           
+                R:ASTNode = self._parse_R()
+                Ats.append((R, identifier))  # Append the next R with its identifier 
             else:
                 err_token = self._peek()
                 line = err_token.line if err_token else "N/A"
                 raise SyntaxError(f"Syntax error in line {line}: IDENTIFIER expected after '@'")
+            
+        if len(Ats) == 1:
+            return Ats[0][0]
+        elif len(Ats) > 1:
+            # If there are multiple Ats, we need to combine them into an AtNode
+            current_node = Ats[0][0]
+            for i in range(1, len(Ats)):
+                if Ats[i][1] is not None:
+                    # If there's an identifier, create an AtNode
+                    current_node = AtNode(current_node, Ats[i][1], Ats[i][0])
+            return current_node  # Return the combined AtNode
     
     def _parse_R(self):
         """ Parses R (Repeated applications/atoms).
         R -> Rn (Rn)* 
         """
-        self._parse_Rn()
+        firstRn:ASTNode = self._parse_Rn()
+
+        Rns:list[ASTNode] = [firstRn]  # Start with the first Rn
+
         # Check if next token can start an Rn (for function application)
         while self._peek() and \
               (self._peek().type in ["IDENTIFIER", "INTEGER", "STRING"] or \
                self._peek().value in ["true", "false", "nil", "(", "dummy"]): 
-            self._parse_Rn()
-            self._build_node("gamma", 2) # Represents function application
+            Rns.append(self._parse_Rn())
+
+        if len(Rns) == 1:
+            return Rns[0]
+        elif len(Rns) > 1:
+            # If there are multiple Rns, we need to combine them into a single node
+            current_node = Rns[0]
+            for i in range(1, len(Rns)):
+                current_node = GammaNode(current_node, Rns[i])  # Combine them into a GammaNode
 
     def _parse_Rn(self):   
         """ Parses Rn (Atomic operands).
@@ -336,17 +461,16 @@ class Parser:
         
         if token.type == "IDENTIFIER":
             self._consume(expected_type="IDENTIFIER")
-            self._build_node(f"<ID:{value}>", 0)
+            return RandNode("IDENTIFIER", value)  # Create a RandNode for IDENTIFIER
         elif token.type == "INTEGER":
             self._consume(expected_type="INTEGER")
-            self._build_node(f"<INT:{value}>", 0)
+            return RandNode("INTEGER", int(value))  # Create a RandNode for INTEGER
         elif token.type == "STRING":
             self._consume(expected_type="STRING")
-            self._build_node(f"<STR:{value}>", 0)
+            return RandNode("STRING", value)  # Create a RandNode for STRING
         elif value in ["true", "false", "nil", "dummy"]:
             self._consume(value)
-            # Standardize node names for keywords if needed, e.g., "true" instead of "<true>"
-            self._build_node(value, 0) # Or self._build_node(f"<{value}>", 0) if you prefer
+            return RandNode(value.upper(), value)
         elif value == "(":
             self._consume("(")
             self._parse_E()
@@ -359,24 +483,30 @@ class Parser:
         """ Parses D (Definitions).
         D -> Da ('within' D)?
         """
-        self._parse_Da()
+        Da:ASTNode = self._parse_Da()
         if self._peek() and self._peek().value == "within":
             self._consume("within")
-            self._parse_D()
-            self._build_node("within", 2)
+            return WithinNode(Da, self._parse_D())
+        else:
+            # If no 'within', just return Da
+            return Da
     
     def _parse_Da(self):
         """ Parses Da.
         Da -> Dr ('and' Dr)*
         """
-        self._parse_Dr()
+        firstDr:ASTNode =self._parse_Dr()
+        Drs:list[ASTNode] = [firstDr]  # Start with the first Dr
         n = 0
         while self._peek() and self._peek().value == "and":
             self._consume("and")
-            self._parse_Dr()
+            Drs.append(self._parse_Dr())  # Append the next Dr
             n += 1
+
         if n > 0:  
-            self._build_node("and", n + 1)
+            return AndNode(Drs)  # If multiple Drs, return an AndNode with the list of Drs
+        elif n == 0:
+            return firstDr
     
     def _parse_Dr(self):
         """ Parses Dr.
@@ -384,10 +514,9 @@ class Parser:
         """
         if self._peek() and self._peek().value == "rec":
             self._consume("rec")
-            self._parse_Db()
-            self._build_node("rec", 1)
+            return RecNode(self._parse_Db())  # If 'rec', parse Db and return a RecNode
         else:
-            self._parse_Db()
+            return self._parse_Db()
     
     def _parse_Db(self):    
         """ Parses Db (Definition body).
@@ -401,68 +530,34 @@ class Parser:
 
         if token.value == "(":
             self._consume("(")
-            self._parse_D()
+            D:ASTNode = self._parse_D() # If it's a parenthesized definition, parse D inside parentheses
             self._consume(")")
-            # Parenthesized definition, D's node is already on stack.
+            return D  # Return the parsed D, which is a child of the parentheses node
         elif token.type == "IDENTIFIER":
-            identifier_node_value = f"<ID:{token.value}>"
+            identifier = token.value
             self._consume(expected_type="IDENTIFIER")
-            # We push the identifier now, it will be a child of 'function_form' or '='
-            self._build_node(identifier_node_value, 0) 
 
-            # Check if it's a function form (IDENTIFIER Vb+ = E) or simple assignment (IDENTIFIER = E)
-            # Vb starts with IDENTIFIER or '('. If next is '=', it's simple assignment.
-            # If next is IDENTIFIER or '(', it's function form.
-            
-            # This part needs to distinguish between `f x = E` and `f = E`
-            # The original code structure for Db was a bit complex.
-            # Let's try to simplify based on common patterns.
-            
-            # If next is '=' directly, it's a simple var assignment.
-            # If next is Vb (IDENTIFIER or '('), it's a function.
-            
-            n_vbs = 0
-            # Look ahead for Vb+
-            # A Vb is an IDENTIFIER or '(' ... ')'
-            # This loop collects Vbs for function_form
-            while self._peek() and (self._peek().type == "IDENTIFIER" or self._peek().value == "("):
-                self._parse_Vb()
-                n_vbs += 1
+            peek = self._peek()
 
-            if self._peek() and self._peek().value == "=":
+            if peek and peek.value == ",":
+                self._consume(",")
+                Vls:list[ASTNode] = [RandNode("IDENTIFIER", identifier)] + self._parse_Vl
                 self._consume("=")
-                self._parse_E()
-                if n_vbs > 0: # It was f Vb+ = E
-                    # Children: E, Vb_n, ..., Vb_1, f_identifier
-                    self._build_node("function_form", n_vbs + 2) 
-                else: # It was f = E
-                    # Children: E, f_identifier
-                    self._build_node("=", 2)
+                E:ASTNode = self._parse_E()
+                return EqualNode(Vls, E)  # Return an EqualNode with the list of identifiers and the expression
+            elif (peek and peek.type == "IDENTIFIER") or \
+               (peek and peek.value == "("):  # If next is IDENTIFIER or '('
+                # This indicates a function form with variable bindings
+                # If next is IDENTIFIER, it might be a function form with Vb
+                Vbs:list[ASTNode] = [self._parse_Vb()]
+                self._consume("=")
+                E:ASTNode = self._parse_E()
+                return FcnFormNode(RandNode("IDENTIFIER", identifier), Vbs, E)  # Return a function form node
             else:
-                err_token = self._peek()
-                line = err_token.line if err_token else "N/A"
-                # If n_vbs > 0 but no '=', it's an error.
-                # If n_vbs == 0 and no '=', it means IDENTIFIER was followed by something unexpected.
-                if n_vbs > 0:
-                    raise SyntaxError(f"Syntax error in line {line}: '=' expected after function parameters.")
-                else: # This case means IDENTIFIER was not followed by Vb or '='.
-                      # This might be an incomplete definition or a different construct not covered by Db.
-                      # The original code's Db logic for IDENTIFIER was:
-                      # elif tokens[0].type == "<IDENTIFIER>":
-                      #   read(value)
-                      #   build_tree("<ID:" + value + ">", 0)  
-                      #   if tokens[0].content in [",", "="]:  // This implies Vl for simple assignment
-                      #       procedure_Vl() // This seems to be for tuple assignment like x,y = E
-                      #       read("=")
-                      #       procedure_E()
-                      #       build_tree("=", 2)
-                      #   else: // This is for function form
-                      #       ... procedure_Vb() ... build_tree("function_form", n + 2)
-                      # This suggests Vl might be for multiple assignment targets, which is not explicitly in Db here.
-                      # For now, we assume Db is either `ID Vb* = E` or `( D )`.
-                      # If `Vl` is for `x,y,z = E`, that's a different rule.
-                      # The current logic handles `ID = E` and `ID Vb+ = E`.
-                    raise SyntaxError(f"Syntax error in line {line}: '=' or function parameters expected after identifier in definition.")
+                # If next is not a comma or IDENTIFIER, it's a simple variable binding
+                self._consume("=")
+                E:ASTNode = self._parse_E()
+                return EqualNode([RandNode("IDENTIFIER", identifier)], E)
         else:
             raise SyntaxError(f"Syntax error in line {token.line}: IDENTIFIER or '(' expected for a definition.")
 
@@ -478,20 +573,18 @@ class Parser:
 
         if token.type == "IDENTIFIER":
             self._consume(expected_type="IDENTIFIER")
-            self._build_node(f"<ID:{token.value}>", 0)     
+            return [RandNode("IDENTIFIER", token.value)]  # Return a list with a single identifier node
         elif token.value == "(":
             self._consume("(")
             # Check if next is ')' for an empty tuple '()' or if it's a Vl
             if self._peek() and self._peek().value == ")":
                 self._consume(")")
-                self._build_node("()", 0) # Node for empty parameter tuple
+                return []  # Return an empty  node
             elif self._peek() and self._peek().type == "IDENTIFIER": 
                 # This indicates the start of Vl
-                self._parse_Vl() # Vl will build its own node(s)
+                Vls:list[ASTNode] = self._parse_Vl() # Vl will build its own node(s)
                 self._consume(")")
-                # If Vl builds a single node for the list, that node is already on stack.
-                # If Vl builds multiple ID nodes, they are on stack.
-                # The original `build_tree(",", n+1)` in Vl suggests it creates a list node.
+                return Vls  # Return the list of variable bindings from Vl
             else: # Content inside () but not IDENTIFIER and not ')'
                 err_token = self._peek()
                 line = err_token.line if err_token else "N/A"
@@ -511,12 +604,10 @@ class Parser:
         # First identifier is mandatory for Vl
         first_id_token = self._peek()
         if not (first_id_token and first_id_token.type == "IDENTIFIER"):
-            line = first_id_token.line if first_id_token else "N/A"
-            raise SyntaxError(f"Syntax error in line {line}: IDENTIFIER expected in variable list.")
+            return []
         
+        Vls:list[ASTNode] = [RandNode("IDENTIFIER", first_id_token.value)]  # Start with the first identifier
         self._consume(expected_type="IDENTIFIER")
-        self._build_node(f"<ID:{first_id_token.value}>", 0)    
-        n_additional_ids = 0
         
         while self._peek() and self._peek().value == ",":
             self._consume(",")
@@ -525,50 +616,12 @@ class Parser:
                 line = next_id_token.line if next_id_token else "N/A"
                 raise SyntaxError(f"Syntax error in line {line}: IDENTIFIER expected after ',' in variable list.")
             
-            self._consume(expected_type="IDENTIFIER")
-            self._build_node(f"<ID:{next_id_token.value}>", 0)    
-            n_additional_ids += 1
+            Vls.append(RandNode("IDENTIFIER", next_id_token.value))  # Append the next identifier
+            self._consume(expected_type="IDENTIFIER") 
             
-        if n_additional_ids > 0:
-            # Children are: ID_last, ..., ID_second, ID_first
-            self._build_node(",", n_additional_ids + 1) # Build a tuple/list like node
+        return Vls
 
-    # --- Utility for printing the tree (optional) ---
-    def _print_tree_recursive(self, node, prefix="", is_last=True):
-        """ Helper for printing the tree. """
-        if node is None: return
-        print(prefix + ("└── " if is_last else "├── ") + str(node.value))
-        
-        children = node.children if hasattr(node, 'children') and node.children else []
-        
-        for i, child in enumerate(children):
-            new_prefix = prefix + ("    " if is_last else "│   ")
-            self._print_tree_recursive(child, new_prefix, i == len(children) - 1)
 
-    def print_ast(self, root_node):
-        """ Prints the AST in a tree-like format. """
-        if root_node:
-            self._print_tree_recursive(root_node)
-        else:
-            print("AST is empty or not generated.")
-
-# Example Usage (typically in your main.py or a test file):
-# from app.lexer import Lexer
-# from app.parser import Parser
-#
-# source = "let x = 10 in x + 5"
-# lexer = Lexer(source)
-# tokens = lexer.tokenize()
-#
-# parser = Parser(tokens)
-# try:
-#     ast_root = parser.parse()
-#     print("Parsing successful!")
-#     parser.print_ast(ast_root)
-# except SyntaxError as e:
-#     print(e)
-# except Exception as e:
-#     print(f"An unexpected error occurred: {e}")
 
 '''
 
