@@ -18,16 +18,6 @@ from .ast_nodes import (
     EqualNode,
 )
 
-# Assuming you have a generic Node class in ast_nodes.py
-# If not, you'll need to create one or adapt _build_node and its calls.
-# Example:
-# class Node:
-#     def __init__(self, value, children=None):
-#         self.value = value
-#         self.children = children if children is not None else []
-#     def __repr__(self):
-#         return f"Node({self.value}, {self.children})"
-# from .ast_nodes import ASTNode # Or your specific base/generic node class
 
 
 class Parser:
@@ -63,19 +53,6 @@ class Parser:
         
         self.current_token_index += 1
         return token
-
-    def _build_node(self, value: str, num_children: int):
-        """Builds an AST node and pushes it onto the AST stack."""
-        children = []
-        for _ in range(num_children):
-            if not self.ast_stack:
-                raise Exception("Parser error: AST stack underflow during node construction.")
-            children.insert(0, self.ast_stack.pop()) # Pop children in reverse order of parsing
-        
-        # This assumes a generic ASTNode(value, children_list) constructor.
-        # Adapt this if your ast_nodes.py has different structures.
-        node = ASTNode(value, children) 
-        self.ast_stack.append(node)
 
     def parse(self):
         """Main parsing method. Starts parsing from the top-level rule."""
