@@ -23,3 +23,13 @@ class ArrowNode(ASTNode):
             return self.true_branch.evaluate(env)
         else:
             return self.false_branch.evaluate(env)
+        
+    def print(self, prefix: str = ""):
+        """
+        Print the 'arrow' node in a readable format.
+        :param prefix: The indentation level for pretty printing.
+        """
+        print(f"{prefix}ArrowNode:")
+        self.B.print(prefix + "*")
+        self.true_branch.print(prefix + "*")
+        self.false_branch.print(prefix + "*")

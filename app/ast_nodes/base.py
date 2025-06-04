@@ -20,6 +20,14 @@ class ASTNode(ABC):
         """
         pass
 
+    @abstractmethod
+    def print(self, prefix:str = ""):
+        """
+        Print the AST node in a readable format.
+        :param indent: The indentation level for pretty printing.
+        """
+        pass
+
 class Closure:
     def __init__(self, params: list[str], body: ASTNode, env: dict):
         """
