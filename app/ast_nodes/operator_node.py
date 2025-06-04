@@ -19,9 +19,6 @@ class OperatorNode(ASTNode):
         return self
 
     def evaluate(self, env):
-        # For unary operators, right might be None. Adapt as needed.
-        # Current implementation assumes binary for most.
-        # Example: if self.operator == 'neg' and self.right is None: return -self.left.evaluate(env)
         
         left_val = self.left.evaluate(env)
         right_val = self.right.evaluate(env) if self.right else None
@@ -31,12 +28,7 @@ class OperatorNode(ASTNode):
                 return left_val + right_val
             case "-":
                 # Handle unary negation if right_val is None and operator is '-'
-                if right_val is None: # Assuming '-' can be unary
-                     # This depends on how your parser creates OperatorNode for unary minus.
-                     # If it's always OperatorNode('neg', operand, None), then this case is not for '-'
-                     # If parser makes OperatorNode('-', operand1, operand2) for binary and
-                     # potentially OperatorNode('-', operand, None) for unary, this needs adjustment.
-                     # For now, assuming binary for arithmetic ops.
+                if right_val is None: 
                     raise ValueError("Unary minus should be handled differently, e.g. a 'neg' operator or specific node")
                 return left_val - right_val
             case "*":
@@ -57,7 +49,17 @@ class OperatorNode(ASTNode):
                 return left_val == right_val
             case "ne" | "!=":
                 return left_val != right_val
-            # Add other operators like 'or', 'and', 'not' if they use OperatorNode
-            # Or if they have their own specific nodes (e.g. AndNode, OrNode, NotNode)
             case _:
                 raise ValueError(f"Unknown operator: {self.operator}")
+            
+
+
+    def print(self, prefix: str = ""):
+        """
+        Print the operator node in a readable format.
+        :param prefix: The indentation level for pretty printing.
+        """
+        print(f"{prefix}{self.operator}")
+        self.left.print(prefix + "*")
+        if self.right:
+            self.right.print(prefix + "*")

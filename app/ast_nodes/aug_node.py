@@ -26,3 +26,12 @@ class AugNode(ASTNode):
         raise NotImplementedError("AugNode evaluation not fully defined")
         ##
         #pass
+
+    def print(self, prefix: str = ""):
+        """
+        Print the 'aug' node in a readable format.
+        :param prefix: The indentation level for pretty printing.
+        """
+        print(f"{prefix}AugNode:")
+        self.Ta.print(prefix + "*")
+        self.Tc.print(prefix + "*")

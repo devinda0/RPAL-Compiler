@@ -422,6 +422,8 @@ class Parser:
             current_node = Rns[0]
             for i in range(1, len(Rns)):
                 current_node = GammaNode(current_node, Rns[i])  # Combine them into a GammaNode
+            
+            return current_node  # Return the combined GammaNode
 
     def _parse_Rn(self):   
         """ Parses Rn (Atomic operands).
@@ -449,8 +451,9 @@ class Parser:
             return RandNode(value.upper(), value)
         elif value == "(":
             self._consume("(")
-            self._parse_E()
+            E:ASTNode = self._parse_E()
             self._consume(")")
+            return E  # Return the parsed expression inside parentheses
             # No specific node for parentheses; the structure of E is preserved.
         else:
             raise SyntaxError(f"Syntax error in line {token.line}: Unexpected token '{value}'. Expected IDENTIFIER, INTEGER, STRING, keyword, or '('.")
@@ -525,7 +528,10 @@ class Parser:
                (peek and peek.value == "("):  # If next is IDENTIFIER or '('
                 # This indicates a function form with variable bindings
                 # If next is IDENTIFIER, it might be a function form with Vb
-                Vbs:list[ASTNode] = [self._parse_Vb()]
+                Vbs:list[ASTNode] = []
+                while self._peek() and (self._peek().type == "IDENTIFIER" or self._peek().value == "("):
+                    Vbs += self._parse_Vb()
+
                 self._consume("=")
                 E:ASTNode = self._parse_E()
                 return FcnFormNode(RandNode("IDENTIFIER", identifier), Vbs, E)  # Return a function form node
