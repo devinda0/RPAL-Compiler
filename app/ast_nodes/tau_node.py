@@ -19,3 +19,12 @@ class TauNode(ASTNode):
         For a TauNode, this typically means evaluating each of its child nodes.
         """
         return [ta.evaluate(env) for ta in self.T]
+    
+    def print(self, prefix: str = ""):
+        """
+        Print the 'tau' node in a readable format.
+        :param prefix: The indentation level for pretty printing.
+        """
+        print(f"{prefix}TauNode:")
+        for ta in self.T:
+            ta.print(prefix + "*")

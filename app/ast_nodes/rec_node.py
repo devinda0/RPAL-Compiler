@@ -24,40 +24,19 @@ class RecNode(ASTNode):
         
         Transforms: rec (X = E)  into  X = (Y* (lambda X . E))
         '''
-        if not isinstance(self.Db, EqualNode):
-            # Or if self.Db is not standardized yet, standardize it first.
-            # For this transformation, self.Db is expected to be X = E.
-            # If self.Db could be something else that *becomes* X=E after its own standardization,
-            self.Db = self.Db.standerdize() 
-            # Assuming self.Db is already an EqualNode as per typical parsing of 'rec X = E'.
-            #raise TypeError("RecNode expects Db to be an EqualNode (X = E)")
+        standardized_Db:EqualNode = self.Db.standerdize()
 
-        # X is the identifier (function name) being defined
-        # E is the body of the function
-        # These come from the EqualNode child of RecNode
-        X_node = self.Db.left  # This should be an identifier node (e.g., RandNode)
-        E_node = self.Db.right # This is the expression for the function body
-
-        # Standardize the body E, as it might contain other constructs
-        standardized_E = E_node.standerdize()
+        if len(standardized_Db.left) != 1:
+            raise ValueError("RecNode's Db must have exactly one left-hand side variable.")
         
-        # X_node is an identifier, typically already standard. If it could be complex, standardize it too.
-        # For 'rec f = ...', f is usually a simple identifier.
-        standardized_X_node = X_node.standerdize()
 
 
-        # Create lambda X . E
-        # The Vb (bound variable) for the lambda is X_node itself.
-        lambda_for_recursion = LambdaNode(Vb=[standardized_X_node], E=standardized_E)
+        lambda_for_recursion = LambdaNode(Vb=standardized_Db.left, E=standardized_Db.right)
 
-        # Create Y* node
         y_star = YStarNode()
-
-        # Create gamma node: Y* (lambda X . E)
         gamma_application = GammaNode(left=y_star, right=lambda_for_recursion)
 
-        # Create the final EqualNode: X = gamma_application
-        standardized_rec_definition = EqualNode(left=standardized_X_node, right=gamma_application)
+        standardized_rec_definition = EqualNode(left=standardized_Db.left, right=gamma_application)
         
         return standardized_rec_definition
 
@@ -69,3 +48,12 @@ class RecNode(ASTNode):
 
     def __repr__(self):
         return f"RecNode(Db={repr(self.Db)})"
+    
+
+    def print(self, prefix: str = ""):
+        """
+        Print the 'rec' node in a readable format.
+        :param prefix: The indentation level for pretty printing.
+        """
+        print(f"{prefix}RecNode:")
+        self.Db.print(prefix + "*")

@@ -27,3 +27,13 @@ class WhereNode(ASTNode):
 
     def evaluate(self, env):
         return self.standerdize().evaluate(env)
+    
+
+    def print(self, prefix: str = ""):
+        """
+        Print the 'where' node in a readable format.
+        :param prefix: The indentation level for pretty printing.
+        """
+        print(f"{prefix}WhereNode:")
+        self.T.print(prefix + "*")
+        self.Dr.print(prefix + "*")

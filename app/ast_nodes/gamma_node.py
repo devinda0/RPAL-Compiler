@@ -1,5 +1,4 @@
 from .base import ASTNode, Closure
-from .ystar_node import YStarNode # Import YStarNode to access YStarNode.YStarApplicator
 
 class GammaNode(ASTNode):
     def __init__(self, left:ASTNode, right: ASTNode):
@@ -17,44 +16,42 @@ class GammaNode(ASTNode):
         return self # Added return self
 
     def evaluate(self, env):
-        evaluated_left = self.left.evaluate(env)
-        
-        if isinstance(evaluated_left, YStarNode.YStarApplicator):
-            # Handle Y* application
-            h_eta_closure_arg = self.right.evaluate(env) # Evaluate the function (lambda f. E)
-            # The YStarApplicator.apply method expects h_eta_closure_arg to be a Closure
-            return evaluated_left.apply(h_eta_closure_arg)
-            
-        elif isinstance(evaluated_left, Closure):
-            # Standard closure application
-            closure_to_call: Closure = evaluated_left
-            arguments = self.right.evaluate(env) # Arguments could be a single value or a list (if TauNode)
+        closure:Closure = self.left.evaluate(env)
+        if not isinstance(closure, Closure):
+            raise TypeError(f"Expected a Closure, but got {type(closure).__name__}.")
+        arguments = self.right.evaluate(env)
 
-            new_env = closure_to_call.env.copy()  # Start with the closure's captured environment
+        new_env = closure.env.copy()  # Start with the closure's captured environment
 
-            # --- Existing logic for binding arguments to parameters ---
-            if len(closure_to_call.params) == 1:
-                if isinstance(arguments, list) and len(arguments) == 1 and len(closure_to_call.params) == 1 :
-                     new_env[closure_to_call.params[0]] = arguments[0]
-                elif not isinstance(arguments, list) and len(closure_to_call.params) == 1:
-                     new_env[closure_to_call.params[0]] = arguments
-                elif isinstance(arguments, list) and len(closure_to_call.params) == 1 and len(arguments) != 1:
-                     raise ValueError(f"Function expected 1 argument, got a list of {len(arguments)}")
-                else: 
-                     new_env[closure_to_call.params[0]] = arguments 
-            elif len(closure_to_call.params) == 0:
-                if arguments is not None and not (isinstance(arguments, list) and len(arguments) == 0):
-                     pass 
-            elif not isinstance(arguments, list) or len(closure_to_call.params) != len(arguments):
-                raise ValueError(
-                    f"Function '{closure_to_call.params}' expected {len(closure_to_call.params)} arguments, "
-                    f"got {len(arguments) if isinstance(arguments, list) else '1 (non-list)'}. Arguments: {arguments}"
-                )
-            else: # Multiple parameters, arguments is a list
-                for i in range(len(closure_to_call.params)):
-                    new_env[closure_to_call.params[i]] = arguments[i]
-            # --- End of existing argument binding logic ---
-            
-            return closure_to_call.body.evaluate(new_env)
+        if len(closure.params) == 0:
+            if arguments is not None:
+                raise ValueError("Closure with no parameters should not receive any arguments.")
+            return closure.body.evaluate(new_env)  # Evaluate the body with the captured environment
+        elif len(closure.params) == 1:
+            if isinstance(arguments, list):
+                if len(arguments) != 1:
+                    raise ValueError(f"Expected a single argument for closure, but got {len(arguments)}.")
+                arguments = arguments[0]
+            new_env[closure.params[0]] = arguments
+            return closure.body.evaluate(new_env)
+        elif len(closure.params) > 1:
+            if not isinstance(arguments, list):
+                new_env[closure.params[0]] = arguments
+                return Closure(closure.params[1:], closure.body, new_env)  # Return a new closure with the remaining parameters
+            if len(arguments) != len(closure.params):
+                raise ValueError(f"Expected {len(closure.params)} arguments for closure, but got {len(arguments)}.")
+            for i, param in enumerate(closure.params):
+                new_env[param] = arguments[i]
+            return closure.body.evaluate(new_env)
         else:
-            raise TypeError(f"Cannot apply non-function: {type(evaluated_left)}. Left expression was: {self.left}")
+            raise ValueError(f"Unexpected number of parameters in closure: {len(closure.params)}.")
+    
+
+    def print(self, prefix: str = ""):
+        """
+        Print the 'gamma' node in a readable format.
+        :param prefix: The indentation level for pretty printing.
+        """
+        print(f"{prefix}GammaNode:")
+        self.left.print(prefix + "*")
+        self.right.print(prefix + "*")

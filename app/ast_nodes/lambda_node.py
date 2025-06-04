@@ -22,3 +22,13 @@ class LambdaNode(ASTNode):
             body=self.E,
             env=env
         )
+    
+    def print(self, prefix: str = ""):
+        """
+        Print the lambda node in a readable format.
+        :param prefix: The indentation level for pretty printing.
+        """
+        print(f"{prefix}LambdaNode:")
+        for vb in self.Vb:
+            vb.print(prefix + "*")
+        self.E.print(prefix + "*")

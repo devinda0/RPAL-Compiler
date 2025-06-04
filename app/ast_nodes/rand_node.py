@@ -25,16 +25,22 @@ class RandNode(ASTNode):
                 raise NameError(f"Name '{self.value}' is not defined in the current environment.")
         elif self.type == "INTEGER" or self.type == "STRING":
             return self.value
-        elif self.type == "TRUE": # Assuming parser creates type "TRUE" for 'true' keyword
+        elif self.type == "TRUE": 
             return True
-        elif self.type == "FALSE": # Assuming parser creates type "FALSE" for 'false' keyword
+        elif self.type == "FALSE": 
             return False
-        elif self.type == "NIL": # Changed from NILL to NIL
+        elif self.type == "NIL":
             return None
-        elif self.type == "DUMMY": # Assuming parser creates type "DUMMY"
-            return "DUMMY" # Or a special Dummy object if needed
+        elif self.type == "DUMMY": 
+            return "DUMMY" 
         else:
-            # This case should ideally not be reached if the parser correctly assigns types.
-            # Or, if 'value' itself is the token value for keywords like 'true', 'false', 'nil'.
-            # The original code had self.type == "TRUE", etc.
             raise ValueError(f"Unknown RandNode type for evaluation: {self.type} with value {self.value}")
+        
+
+    
+    def print(self, prefix: str = ""):
+        """
+        Print the RandNode in a readable format.
+        :param prefix: The indentation level for pretty printing.
+        """
+        print(f"{prefix}{self.value}")
