@@ -1,7 +1,7 @@
 from .lexer import Lexer
 from .parser import Parser
-from .semantic_analyzer import SemanticAnalyzer
-from .code_generator import Interpreter
+# from .semantic_analyzer import SemanticAnalyzer
+# from .code_generator import Interpreter
 from .token import Token
 
 def run(source_code):
@@ -11,8 +11,8 @@ def run(source_code):
     parser = Parser(tokens)
     ast = parser.parse()
 
-    semantic = SemanticAnalyzer(ast)
-    semantic.analyze()
+    # semantic = SemanticAnalyzer(ast)
+    # semantic.analyze()
 
     interpreter = Interpreter(ast)
     result = interpreter.evaluate()
@@ -31,4 +31,5 @@ if __name__ == "__main__":
     tokens = Lexer(code).tokenize()
     parser = Parser(tokens)
     ast = parser.parse()
+    print(ast) #
     print(ast.evaluate({}))  # Should output 8
