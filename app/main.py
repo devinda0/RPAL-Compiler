@@ -1,4 +1,5 @@
 from app.ast_nodes import GammaNode, RandNode
+from app.ast_nodes.node_registry import get_node_class
 from .lexer import Lexer
 from .parser import Parser
 # from .semantic_analyzer import SemanticAnalyzer
@@ -28,12 +29,11 @@ if __name__ == "__main__":
     # for token in tokens:
     #     print(token)
 
-    code = "let rec f x = x eq 0 -> 10 | f (x-1) in f 5"
+    code = "let rec f x = x eq 0 -> 10 | f (x-1) in Print (f 5)"
     tokens = Lexer(code).tokenize()
     parser = Parser(tokens)
     ast = parser.parse()
     # ast.standerdize().print()  # Print the AST structure for debugging
     result = ast.evaluate({})
-    print("Output:", result)
     # print(result.params, result.env)
     # result.body.print()  # Print the result of the evaluation

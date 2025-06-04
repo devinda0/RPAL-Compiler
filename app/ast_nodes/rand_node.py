@@ -1,4 +1,5 @@
 from .base import ASTNode
+from .node_registry import get_node_class
 
 class RandNode(ASTNode):
     def __init__(self, type: str, value: str|int|bool|None): # Adjusted type hint for value
@@ -21,6 +22,9 @@ class RandNode(ASTNode):
         if self.type == "IDENTIFIER":
             if self.value in env:
                 return env[self.value]
+            elif get_node_class(self.value) is not None:
+                # If the identifier corresponds to a registered node, return its class
+                return get_node_class(self.value)().evaluate(env)
             else:
                 raise NameError(f"Name '{self.value}' is not defined in the current environment.")
         elif self.type == "INTEGER" or self.type == "STRING":
