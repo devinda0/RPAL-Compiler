@@ -29,7 +29,18 @@ if __name__ == "__main__":
     # for token in tokens:
     #     print(token)
 
-    code = "let rec f x = x eq 0 -> 10 | f (x-1) in Print (f 5)"
+    code = '''let Vec_sum (A,B) =
+    Psum(A,B,Order A)
+    where
+      rec Psum(A,B,N) = 
+	  N eq 0
+	  ->  nil
+	  |  (Psum(A,B,N-1) aug  A N + B N)
+
+    in (Vec_sum (   (1,2,3),  (4,5,6)  ))
+'''
+    # code = "let rec f n = n eq 1 -> 0 | n eq 2 -> 1 | f (n-1) + f (n-2) in let rec fib n = n eq 0 -> nil | (fib (n-1) aug f (n)) in Print ( fib 6 )"
+    # code = "let rec f x = x eq 0 -> 10 | f (x-1) in Print (f 5)"
     tokens = Lexer(code).tokenize()
     parser = Parser(tokens)
     ast = parser.parse()

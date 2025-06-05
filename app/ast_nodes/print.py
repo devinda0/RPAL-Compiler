@@ -2,7 +2,7 @@ from app.ast_nodes import Closure, RandNode
 from .base import ASTNode
 from .node_registry import register_node
 
-@register_node
+@register_node  
 class Print(ASTNode):
     def __init__(self):
         """
