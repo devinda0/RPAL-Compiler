@@ -1,4 +1,5 @@
 from .base import ASTNode, Closure
+from .tau_node import TauClosure
 
 class GammaNode(ASTNode):
     def __init__(self, left:ASTNode, right: ASTNode):
@@ -38,13 +39,13 @@ class GammaNode(ASTNode):
             new_env[closure.params[0]] = arguments
             return closure.body.evaluate(new_env)
         elif len(closure.params) > 1:
-            if not isinstance(arguments, list):
+            if not isinstance(arguments, TauClosure):
                 new_env[closure.params[0]] = arguments
                 return Closure(closure.params[1:], closure.body, new_env)  # Return a new closure with the remaining parameters
-            if len(arguments) != len(closure.params):
+            if len(arguments.get()) != len(closure.params):
                 raise ValueError(f"Expected {len(closure.params)} arguments for closure, but got {len(arguments)}.")
             for i, param in enumerate(closure.params):
-                new_env[param] = arguments[i]
+                new_env[param] = arguments.get()[i]
             return closure.body.evaluate(new_env)
         else:
             raise ValueError(f"Unexpected number of parameters in closure: {len(closure.params)}.")
