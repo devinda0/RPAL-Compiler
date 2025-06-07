@@ -5,35 +5,35 @@ from .parser import Parser
 # from .semantic_analyzer import SemanticAnalyzer
 # from .code_generator import Interpreter
 from .token import Token
+import argparse
 
-def run(source_code):
-    lexer = Lexer(source_code)
-    tokens = lexer.tokenize()
-
-    parser = Parser(tokens)
-    ast = parser.parse()
-
-    # semantic = SemanticAnalyzer(ast)
-    # semantic.analyze()
-
-    interpreter = Interpreter(ast)
-    result = interpreter.evaluate()
-    print("Output:", result)
 
 if __name__ == "__main__":
-    # with open("input.rpal", "r") as f:
-    #     code = f.read()
-    # run(code)
-    # test_code = "'''Hello, World!'''"
-    # tokens = Lexer(test_code).tokenize()
-    # for token in tokens:
-    #     print(token)
 
-    code = "let rec f x = x eq 0 -> 10 | f (x-1) in Print (f 5)"
+    parser = argparse.ArgumentParser()
+    parser.add_argument("file", type=str, help="The file to parse and evaluate")
+    parser.add_argument("--ast", action="store_true", help="Print the AST structure")
+    parser.add_argument("--st", action="store_true", help="Print the standardized AST")
+    args = parser.parse_args()
+    
+    with open("test.rpal", 'r') as file:
+        code = file.read()
+
     tokens = Lexer(code).tokenize()
     parser = Parser(tokens)
     ast = parser.parse()
-    # ast.standerdize().print()  # Print the AST structure for debugging
-    result = ast.evaluate({})
-    # print(result.params, result.env)
-    # result.body.print()  # Print the result of the evaluation
+
+    if args.ast:
+        print()
+        ast.print()  # Print the AST structure for debugging
+        print()
+
+    if args.st:
+        print()
+        ast.standerdize().print()
+        print()
+
+    ast.evaluate({})
+
+
+    
