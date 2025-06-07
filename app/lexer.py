@@ -3,7 +3,7 @@ from app.token import Token
 class Lexer:
     __letters = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
     __digits = "0123456789"
-    __operators = "+-*<>&.@:=~|$!#%^_[]{}?"  # ' , " , / are not included
+    __operators = "+-*<>&.@:=~|$!#%^_[]{}?/"  # ' , " , / are not included
     __whitespace = " \t\n\r"
     __punction = ",;()"
     __keywords = {
