@@ -35,7 +35,7 @@ class RandNode(ASTNode):
             return False
         elif self.type == "NIL":
             return None
-        elif self.type == "DUMMY": 
+        elif self.type == "DUMMY":
             return "DUMMY" 
         else:
             raise ValueError(f"Unknown RandNode type for evaluation: {self.type} with value {self.value}")

@@ -1,3 +1,4 @@
+from app.ast_nodes.bracket_node import BracketNode
 from app.ast_nodes.comma_node import CommaNode
 from .base import ASTNode, Closure
 
@@ -32,6 +33,13 @@ class LambdaNode(ASTNode):
         if isinstance(self.Vb[0], CommaNode):
             return Closure(
                 params=[child.value for child in self.Vb[0].children], 
+                body=self.E,
+                env=env
+            )
+        
+        if isinstance(self.Vb[0], BracketNode):
+            return Closure(
+                params=[self.Vb[0]], 
                 body=self.E,
                 env=env
             )
