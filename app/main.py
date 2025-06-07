@@ -1,10 +1,6 @@
-from app.ast_nodes import GammaNode, RandNode
-from app.ast_nodes.functions.node_registry import get_node_class
+from .ast_nodes.functions.node_registry import get_node_class
 from .lexer import Lexer
 from .parser import Parser
-# from .semantic_analyzer import SemanticAnalyzer
-# from .code_generator import Interpreter
-from .token import Token
 import argparse
 
 
