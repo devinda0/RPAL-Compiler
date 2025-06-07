@@ -50,10 +50,10 @@ class TauClosure(Closure):
         self.T = T  # Store the tuple elements
     
     def get(self):
-        return [elem.evaluate(self.env) for elem in self.T]
+        return self.T
     
     def __str__(self):
-        return f"({', '.join(str(ta.evaluate(self.env)) for ta in self.T)})"
+        return f"({', '.join(str(ta.evaluate(self.env) if isinstance(ta,ASTNode) else ta) for ta in self.T)})"
     
 class TauNodeGetter(ASTNode):
     def __init__(self, Tas:list[ASTNode]):
