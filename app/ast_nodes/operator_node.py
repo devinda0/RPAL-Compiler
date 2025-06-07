@@ -35,6 +35,8 @@ class OperatorNode(ASTNode):
                 return left_val - right_val
             case "*":
                 return left_val * right_val
+            case "**":  # Assuming '**' is for exponentiation
+                return left_val ** right_val
             case "/":
                 return left_val / right_val
             case "%": # Added from original code
