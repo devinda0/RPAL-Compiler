@@ -16,10 +16,10 @@ class FcnFormNode(ASTNode):
 
     def standerdize(self):
         standardized_identifier = self.identifier.standerdize()
-        
+
         lambda_expression = LambdaNode(Vb=self.Vbs, E=self.E).standerdize()
             
-        return EqualNode(left=[standardized_identifier], right=lambda_expression)
+        return EqualNode(left=standardized_identifier, right=lambda_expression)
 
     def evaluate(self, env):
         raise NotImplementedError("FcnFormNode evaluation is context-dependent and typically modifies environment rather than returning a value directly.")

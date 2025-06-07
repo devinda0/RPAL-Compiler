@@ -1,7 +1,7 @@
 from .base import ASTNode
 
 class EqualNode(ASTNode):
-    def __init__(self, left: ASTNode | list[ASTNode], right: ASTNode | list[ASTNode]): # Made left/right more flexible
+    def __init__(self, left: ASTNode , right: ASTNode): # Made left/right more flexible
         """
         Represents an equality (assignment) expression in the AST.
         :param left: The left operand(s) of the equality (variable or list of variables for tuple assignment).
@@ -12,14 +12,13 @@ class EqualNode(ASTNode):
         self.right = right
 
     def standerdize(self):
-        standardized_right = self.right.standerdize() if isinstance(self.right, ASTNode) else [r.standerdize() for r in self.right]
-        standardized_left = self.left.standerdize() if isinstance(self.left, ASTNode) else [l.standerdize() for l in self.left]
-
+        standardized_right = self.right.standerdize() 
+        standardized_left = self.left.standerdize()
 
         # Return a new EqualNode or modify in place
-        self.left = standardized_left
-        self.right = standardized_right
-        return self
+        node =  EqualNode(standardized_left, standardized_right)
+        
+        return node
 
     def evaluate(self, env):
         """

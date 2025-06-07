@@ -19,7 +19,7 @@ class LetNode(ASTNode):
 
         standardized_LetNode = GammaNode(
             left=LambdaNode(
-                Vb = standardized_D.left, # Assuming standardized_D.left is compatible with LambdaNode Vb
+                Vb = [standardized_D.left], # Assuming standardized_D.left is compatible with LambdaNode Vb
                 E = standardized_E
             ),
             right=standardized_D.right
