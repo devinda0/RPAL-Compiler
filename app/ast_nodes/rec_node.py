@@ -26,12 +26,7 @@ class RecNode(ASTNode):
         '''
         standardized_Db:EqualNode = self.Db.standerdize()
 
-        if len(standardized_Db.left) != 1:
-            raise ValueError("RecNode's Db must have exactly one left-hand side variable.")
-        
-
-
-        lambda_for_recursion = LambdaNode(Vb=standardized_Db.left, E=standardized_Db.right)
+        lambda_for_recursion = LambdaNode(Vb=[standardized_Db.left], E=standardized_Db.right)
 
         y_star = YStarNode()
         gamma_application = GammaNode(left=y_star, right=lambda_for_recursion)

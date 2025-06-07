@@ -15,11 +15,11 @@ class WhereNode(ASTNode):
     
     def standerdize(self):
         standerdized_T = self.T.standerdize()
-        standerdized_Dr = self.Dr.standerdize() # Assuming standerdized_Dr has .left and .right
+        standerdized_Dr = self.Dr.standerdize() 
 
         return GammaNode(
             left=LambdaNode(
-                Vb=standerdized_Dr.left, # Assuming compatible with LambdaNode Vb
+                Vb=[standerdized_Dr.left], 
                 E=standerdized_T
             ),
             right=standerdized_Dr.right

@@ -21,7 +21,7 @@ class WithinNode(ASTNode):
             left=standardized_D.left, # X2
             right=GammaNode(
                 left=LambdaNode(
-                    Vb=standardized_Da.left, # X1 (parameter)
+                    Vb=[standardized_Da.left], # X1 (parameter)
                     E=standardized_D.right   # E2 (body, uses X1)
                 ),
                 right=standardized_Da.right  # E1 (argument)
