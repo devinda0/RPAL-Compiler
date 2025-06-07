@@ -68,9 +68,10 @@ class Lexer:
     def __extract_string(self, start: int): # Extracts a string literal token.
         end = start
         extracted_string = ""
-        if self.__source[start] == '"':
+        if self.__source[start] == '"' or self.__source[start] == "'":
+            quote_char = self.__source[start]
             end += 1
-            while end < len(self.__source) and self.__source[end] != '"':
+            while end < len(self.__source) and self.__source[end] != quote_char:
                 if self.__source[end] == "\\":
                     end += 1
                     if end < len(self.__source):
@@ -122,7 +123,7 @@ class Lexer:
                 index = self.__extract_integer(index)
             elif char in self.__operators:
                 index = self.__extract_operator(index)
-            elif char == '"':
+            elif char == '"' or char == "'": # Handles string literals
                 index = self.__extract_string(index)
             elif char in self.__punction:
                 index = self.__extract_punction(index)

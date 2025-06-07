@@ -166,10 +166,10 @@ class Parser:
             Tcs.append(self._parse_Tc())
         
         if len(Tcs) > 1:
-            currentNode = OperatorNode("aug", Tcs[-2], Tcs[-1])
-            Tcs = Tcs[:-2]  # Remove the last two nodes
-            for Ta in reversed(Tcs):
-                currentNode = OperatorNode("aug", Ta, currentNode)
+            currentNode = OperatorNode("aug", Tcs[0], Tcs[1])
+            Tcs = Tcs[2:]  # Remove the firs two nodes
+            for Ta in Tcs:
+                currentNode = OperatorNode("aug", currentNode, Ta)
             return currentNode  # Return the binary operation node for multiple Tcs
         elif len(Tcs) == 1:
             return Tcs[0]
@@ -318,12 +318,12 @@ class Parser:
             return Ats[0][0]
         elif len(Ats) > 1:
             # If there are multiple Ats, we need to combine them into a binary operation tree
-            current_node = Ats[-1][0]
-            for i in range(len(Ats) - 2, -1, -1):
-                if Ats[i+1][1] == '+':
-                    current_node = OperatorNode("+", Ats[i][0], current_node)
-                elif Ats[i+1][1] == '-':
-                    current_node = OperatorNode("-", Ats[i][0], current_node)
+            current_node = Ats[0][0]
+            for i in range(1, len(Ats), 1):
+                if Ats[i][1] == '+':
+                    current_node = OperatorNode("+", current_node, Ats[i][0])
+                elif Ats[i][1] == '-':
+                    current_node = OperatorNode("-", current_node, Ats[i][0])
 
             return current_node  # Return the combined binary operation node
         else:
@@ -349,12 +349,12 @@ class Parser:
             return Afs[0][0]
         elif len(Afs) > 1:
             # If there are multiple Afs, we need to combine them into a binary operation tree
-            current_node = Afs[-1][0]
-            for i in range(len(Afs) - 2, -1, -1):
-                if Afs[i+1][1] == '*':
-                    current_node = OperatorNode("*", Afs[i][0], current_node)
-                elif Afs[i+1][1] == '/':
-                    current_node = OperatorNode("/", Afs[i][0], current_node)
+            current_node = Afs[0][0]
+            for i in range(1, len(Afs), -1):
+                if Afs[i][1] == '*':
+                    current_node = OperatorNode("*", current_node, Afs[i][0])
+                elif Afs[i][1] == '/':
+                    current_node = OperatorNode("/", current_node, Afs[i][0])
 
             return current_node
         else:

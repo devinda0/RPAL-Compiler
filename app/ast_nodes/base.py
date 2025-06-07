@@ -39,3 +39,6 @@ class Closure:
         self.params = params
         self.body = body
         self.env = env
+
+    def __str__(self):
+        return f"<Closure>"

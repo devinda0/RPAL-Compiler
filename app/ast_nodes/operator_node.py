@@ -1,3 +1,4 @@
+from app.ast_nodes import TauNode
 from .base import ASTNode
 
 class OperatorNode(ASTNode):
@@ -49,6 +50,12 @@ class OperatorNode(ASTNode):
                 return left_val == right_val
             case "ne" | "!=":
                 return left_val != right_val
+            case "aug": 
+                if left_val is None:
+                    return (right_val,)
+                if not isinstance(left_val, tuple):
+                    raise TypeError(f"Left operand for 'aug' must be a tuple, got {type(left_val).__name__}.")
+                return tuple([i for i in left_val] + [right_val])  # Assuming 'aug' is a tuple-like operation
             case _:
                 raise ValueError(f"Unknown operator: {self.operator}")
             

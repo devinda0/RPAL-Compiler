@@ -30,6 +30,9 @@ class GammaNode(ASTNode):
         elif len(closure.params) == 1:
             if isinstance(arguments, list):
                 if len(arguments) != 1:
+
+                    print(f"Closure params: {closure.params}")
+                    print(f"Arguments: {arguments}")
                     raise ValueError(f"Expected a single argument for closure, but got {len(arguments)}.")
                 arguments = arguments[0]
             new_env[closure.params[0]] = arguments
