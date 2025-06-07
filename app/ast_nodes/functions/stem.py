@@ -2,7 +2,7 @@ from .node_registry import register_node
 from app.ast_nodes import ASTNode, Closure
 
 
-@register_node
+@register_node()
 class Stem(ASTNode):
     def __init__(self):
         """
