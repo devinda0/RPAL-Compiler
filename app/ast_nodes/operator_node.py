@@ -35,6 +35,8 @@ class OperatorNode(ASTNode):
                 return left_val - right_val
             case "*":
                 return left_val * right_val
+            case "**":  # Assuming '**' is for exponentiation
+                return left_val ** right_val
             case "/":
                 return left_val // right_val
             case "%": # Added from original code
@@ -53,8 +55,12 @@ class OperatorNode(ASTNode):
                 return left_val != right_val
             case "&":
                 return left_val and right_val
+            case "or":
+                return left_val or right_val
             case "not":
-                return not left_val  # Assuming 'not' is a unary operator
+                return not left_val  # Assuming 'not' is a unary 
+            case "neg":  # Assuming 'neg' is a unary negation operator
+                return -left_val if right_val is None else -right_val
             case "aug": 
                 if left_val is None:
                     return TauNode([right_val]).evaluate(env)
