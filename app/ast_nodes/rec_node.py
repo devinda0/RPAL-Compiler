@@ -22,7 +22,7 @@ class RecNode(ASTNode):
                                           /    \
                                          X      E
         
-        Transforms: rec (X = E)  into  X = (Y* (lambda X . E))
+        Transforms: rec (X = E)  into  X = (Y* (lambda X. E))
         '''
         standardized_Db:EqualNode = self.Db.standerdize()
 
@@ -55,5 +55,5 @@ class RecNode(ASTNode):
         Print the 'rec' node in a readable format.
         :param prefix: The indentation level for pretty printing.
         """
-        print(f"{prefix}RecNode:")
-        self.Db.print(prefix + "*")
+        print(f"{prefix}rec")
+        self.Db.print(prefix + ". ")

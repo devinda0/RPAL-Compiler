@@ -27,6 +27,6 @@ class AndNode(ASTNode):
         Print the 'and' node in a readable format.
         :param prefix: The indentation level for pretty printing.
         """
-        print(f"{prefix}AndNode:")
+        print(f"{prefix}and")
         for dr in self.Drs:
-            dr.print(prefix + "*")
+            dr.print(prefix + ". ")

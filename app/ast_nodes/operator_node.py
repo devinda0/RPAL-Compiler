@@ -1,3 +1,5 @@
+from app.ast_nodes import TauNode
+from app.ast_nodes.tau_node import TauClosure
 from .base import ASTNode
 
 class OperatorNode(ASTNode):
@@ -49,6 +51,16 @@ class OperatorNode(ASTNode):
                 return left_val == right_val
             case "ne" | "!=":
                 return left_val != right_val
+            case "&":
+                return left_val and right_val
+            case "not":
+                return not left_val  # Assuming 'not' is a unary operator
+            case "aug": 
+                if left_val is None:
+                    return TauNode([right_val]).evaluate(env)
+                if not isinstance(left_val, TauClosure):
+                    raise TypeError(f"Left operand for 'aug' must be a tuple, got {type(left_val).__name__}.")
+                return TauNode([i for i in left_val.get()] + [right_val]).evaluate(env)
             case _:
                 raise ValueError(f"Unknown operator: {self.operator}")
             
@@ -60,6 +72,6 @@ class OperatorNode(ASTNode):
         :param prefix: The indentation level for pretty printing.
         """
         print(f"{prefix}{self.operator}")
-        self.left.print(prefix + "*")
+        self.left.print(prefix + ". ")
         if self.right:
-            self.right.print(prefix + "*")
+            self.right.print(prefix + ". ")

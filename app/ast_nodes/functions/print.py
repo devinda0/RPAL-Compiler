@@ -1,5 +1,5 @@
-from app.ast_nodes import Closure, RandNode
-from .base import ASTNode
+from app.ast_nodes import Closure
+from ..base import ASTNode
 from .node_registry import register_node
 
 @register_node
@@ -41,8 +41,8 @@ class PrintExpression(ASTNode):
         return self
 
     def evaluate(self, env):
-        expression = RandNode("IDENTIFIER", "expression")
-        print(expression.evaluate(env))
+        
+        print(env.get("expression"))
 
     def print(self, prefix: str = ""):
         """

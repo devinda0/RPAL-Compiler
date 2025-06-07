@@ -35,18 +35,18 @@ class EqualNode(ASTNode):
         Print the equality node in a readable format.
         :param prefix: The indentation level for pretty printing.
         """
-        print(f"{prefix}EqualNode:")
+        print(f"{prefix}=")
         if isinstance(self.left, list):
-            print(f"{prefix}*,")
+            print(f"{prefix}. ,")
             for l in self.left:
-                l.print(prefix + "**")
+                l.print(prefix + ". . ")
         else:
-            self.left.print(prefix + "*")
+            self.left.print(prefix + ". ")
         
         if isinstance(self.right, list):
-            print(f"{prefix}*,")
+            print(f"{prefix}. ,")
             for r in self.right:
-                r.print(prefix + "**")
+                r.print(prefix + ". . ")
         else:
-            self.right.print(prefix + "*")
+            self.right.print(prefix + ". ")
 

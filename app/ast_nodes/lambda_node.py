@@ -55,7 +55,7 @@ class LambdaNode(ASTNode):
         Print the lambda node in a readable format.
         :param prefix: The indentation level for pretty printing.
         """
-        print(f"{prefix}LambdaNode:")
+        print(f"{prefix}lambda:")
         for vb in self.Vb:
-            vb.print(prefix + "*")
-        self.E.print(prefix + "*")
+            vb.print(prefix + ". ")
+        self.E.print(prefix + ". ")

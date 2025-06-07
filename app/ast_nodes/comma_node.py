@@ -31,4 +31,4 @@ class CommaNode(ASTNode):
         """
         print(f"{prefix},")
         for child in self.children:
-            child.print(prefix + "*")
+            child.print(prefix + ". ")

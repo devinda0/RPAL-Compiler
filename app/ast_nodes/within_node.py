@@ -37,6 +37,6 @@ class WithinNode(ASTNode):
         Print the 'within' node in a readable format.
         :param prefix: The indentation level for pretty printing.
         """
-        print(f"{prefix}WithinNode:")
-        self.Da.print(prefix + "*")
-        self.D.print(prefix + "*")
+        print(f"{prefix}within")
+        self.Da.print(prefix + ". ")
+        self.D.print(prefix + ". ")
