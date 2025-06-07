@@ -344,13 +344,13 @@ class Parser:
             elif op_token.value == "/":
                 self._consume("/")
                 Afs.append((self._parse_Af(), '/'))  # Append the next Af with '/' operator
-            
+
         if len(Afs) == 1:
             return Afs[0][0]
         elif len(Afs) > 1:
             # If there are multiple Afs, we need to combine them into a binary operation tree
             current_node = Afs[0][0]
-            for i in range(1, len(Afs), -1):
+            for i in range(1, len(Afs)):
                 if Afs[i][1] == '*':
                     current_node = OperatorNode("*", current_node, Afs[i][0])
                 elif Afs[i][1] == '/':

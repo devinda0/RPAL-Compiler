@@ -3,7 +3,7 @@ from app.token import Token
 class Lexer:
     __letters = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
     __digits = "0123456789"
-    __operators = "+-*<>&.@:=~|$!#%^_[]{}?"  # ' , " , / are not included
+    __operators = "+-*<>&.@:=~|$!#%^_[]{}?/"  # ' , " , / are not included
     __whitespace = " \t\n\r"
     __punction = ",;()"
     __keywords = {
@@ -58,6 +58,10 @@ class Lexer:
 
     def __extract_operator(self, start: int): # Extracts an operator token.
         end = start
+
+        if self.__source[start] == '/' and start + 1 < len(self.__source) and self.__source[start + 1] == "/":
+            return self.__delete_comment(start)
+
         while end < len(self.__source) and self.__source[end] in self.__operators:
             end += 1
         token_value = self.__source[start:end]
@@ -127,11 +131,6 @@ class Lexer:
                 index = self.__extract_string(index)
             elif char in self.__punction:
                 index = self.__extract_punction(index)
-            elif char == "/":
-                if index + 1 < len(self.__source) and self.__source[index + 1] == "/":
-                    index = self.__delete_comment(index)
-                else:
-                    raise ValueError("Invalid comment")
             else:
                 raise ValueError(f"Invalid character: {char}")
         return self.__tokens
