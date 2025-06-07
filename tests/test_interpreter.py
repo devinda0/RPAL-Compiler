@@ -239,3 +239,22 @@ Move C to B"""
         run_interpreter(source_codes)
         output = mock_stdout.getvalue().strip()
         self.assertEqual(output, answer)
+
+
+    @patch('sys.stdout', new_callable=StringIO)
+    def test_tuple(self, mock_stdout):
+        source_codes = """
+            let Conc x y = Conc x y in
+            let S = 'CIS' and T = '104B'
+            and Mark = Conc 'CIS'
+            in
+            Print (Conc S T, S @Conc T, Mark T)
+            """
+        
+        answer = "(CIS104B, CIS104B, CIS104B)"
+        
+        mock_stdout.truncate(0)
+        mock_stdout.seek(0)
+        run_interpreter(source_codes)
+        output = mock_stdout.getvalue().strip()
+        self.assertEqual(output, answer)
