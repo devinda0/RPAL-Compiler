@@ -36,7 +36,7 @@ class OperatorNode(ASTNode):
             case "*":
                 return left_val * right_val
             case "/":
-                return left_val / right_val
+                return left_val // right_val
             case "%": # Added from original code
                 return left_val % right_val
             case "gr" | ">": # Assuming 'gr' and '>' are equivalent
