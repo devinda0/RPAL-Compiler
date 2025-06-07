@@ -7,3 +7,4 @@ from .is_tuple import Istuple
 from .is_function import Isfunction
 from .is_integer import Isinteger
 from .is_truthvalue import Istruthvalue
+from .order import Order

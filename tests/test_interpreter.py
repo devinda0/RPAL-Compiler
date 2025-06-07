@@ -180,4 +180,62 @@ class TestInterpreter(unittest.TestCase):
             self.assertEqual(output, answer)
 
 
-    
+    @patch('sys.stdout', new_callable=StringIO)
+    def test_towers(self, mock_stdout):
+        source_codes = """
+            let rec T a b c N =
+            (N gr 1 -> T a c b (N-1) | '') @Conc
+            'Move ' @Conc
+            a @Conc
+            ' to ' @Conc
+            b @Conc
+            '\n' @Conc
+            (N gr 1 -> T c b a (N-1) | '')
+
+            in Print (T 'A' 'B' 'C' 4)
+        """
+        
+        mock_stdout.truncate(0)
+        mock_stdout.seek(0)
+        run_interpreter(source_codes)
+        output = mock_stdout.getvalue().strip()
+        expected_output = (
+            """Move A to C
+Move A to B
+Move C to B
+Move A to C
+Move B to A
+Move B to C
+Move A to C
+Move A to B
+Move C to B
+Move C to A
+Move B to A
+Move C to B
+Move A to C
+Move A to B
+Move C to B"""
+        )
+        self.assertEqual(output, expected_output)
+
+    @patch('sys.stdout', new_callable=StringIO)
+    def test_vectorsum(self, mock_stdout):
+        source_codes = """
+            let Vec_sum (A,B) =
+            Psum(A,B,Order A)
+            where
+            rec Psum(A,B,N) = 
+            N eq 0
+            ->  nil
+            |  (Psum(A,B,N-1) aug  A N + B N)
+
+            in Print (Vec_sum (   (1,2,3),  (4,5,6)  ))
+            """
+        
+        answer = "(5, 7, 9)"
+        
+        mock_stdout.truncate(0)
+        mock_stdout.seek(0)
+        run_interpreter(source_codes)
+        output = mock_stdout.getvalue().strip()
+        self.assertEqual(output, answer)
