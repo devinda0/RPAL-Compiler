@@ -1,3 +1,4 @@
+from app.ast_nodes.comma_node import CommaNode
 from .base import ASTNode, Closure
 
 class LambdaNode(ASTNode):
@@ -11,14 +12,32 @@ class LambdaNode(ASTNode):
         self.E = E
     
     def standerdize(self):
-        self.Vb = [vb.standerdize() for vb in self.Vb]
-        self.E = self.E.standerdize()
-        return self
+        if self.Vb is None or len(self.Vb) == 0:
+            raise ValueError("LambdaNode must have at least one variable binding (Vb).")
+        
+        node = self.E.standerdize()
+
+        for i in range(len(self.Vb)-1, -1, -1):
+            Vb = self.Vb[i].standerdize()
+
+            node = LambdaNode(Vb=[Vb], E=node)
+
+        return node
 
     def evaluate(self, env):
         # Assuming Vb elements have a 'value' attribute after standardization if they are identifiers
+        if len(self.Vb) > 1 :
+            return self.standerdize().evaluate()
+
+        if isinstance(self.Vb[0], CommaNode):
+            return Closure(
+                params=[child.value for child in self.Vb[0].children], 
+                body=self.E,
+                env=env
+            )
+
         return Closure(
-            params=[vb.value for vb in self.Vb], 
+            params=[self.Vb[0].value], 
             body=self.E,
             env=env
         )

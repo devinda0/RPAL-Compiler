@@ -16,10 +16,8 @@ class FcnFormNode(ASTNode):
 
     def standerdize(self):
         standardized_identifier = self.identifier.standerdize()
-        standardized_E = self.E.standerdize()
-        standardized_Vbs = [vb.standerdize() for vb in self.Vbs]
         
-        lambda_expression = LambdaNode(Vb=standardized_Vbs, E=standardized_E)
+        lambda_expression = LambdaNode(Vb=self.Vbs, E=self.E).standerdize()
             
         return EqualNode(left=[standardized_identifier], right=lambda_expression)
 

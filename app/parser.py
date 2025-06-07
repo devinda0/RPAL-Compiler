@@ -1,3 +1,5 @@
+from app.ast_nodes.bracket_node import BracketNode
+from app.ast_nodes.comma_node import CommaNode
 from .token import Token
 from .ast_nodes import (
     ASTNode,  # Assuming you have a base ASTNode class in ast_nodes.py
@@ -109,7 +111,7 @@ class Parser:
             Vb:list[ASTNode] = []
             # Vb+ means one or more Vb
             while self._peek() and (self._peek().type == "IDENTIFIER" or self._peek().value == "("): 
-                Vb += self._parse_Vb()
+                Vb.append(self._parse_Vb())
                 n += 1
             if n == 0:
                 err_token = self._peek()
@@ -520,7 +522,10 @@ class Parser:
 
             if peek and peek.value == ",":
                 self._consume(",")
-                Vls:list[ASTNode] = [RandNode("IDENTIFIER", identifier)] + self._parse_Vl()
+                Vls:CommaNode = self._parse_Vl()  # Parse Vl for multiple identifiers
+                if not Vls or not isinstance(Vls, CommaNode):
+                    raise SyntaxError(f"Syntax error in line {token.line}: Expected a comma-separated list of identifiers after '{identifier}'.")
+                Vls = CommaNode([RandNode("IDENTIFIER", identifier)] + Vls.children)  # Prepend the current identifier to the list
                 self._consume("=")
                 E:ASTNode = self._parse_E()
                 return EqualNode(Vls, E)  # Return an EqualNode with the list of identifiers and the expression
@@ -530,7 +535,7 @@ class Parser:
                 # If next is IDENTIFIER, it might be a function form with Vb
                 Vbs:list[ASTNode] = []
                 while self._peek() and (self._peek().type == "IDENTIFIER" or self._peek().value == "("):
-                    Vbs += self._parse_Vb()
+                    Vbs.append(self._parse_Vb())
 
                 self._consume("=")
                 E:ASTNode = self._parse_E()
@@ -555,16 +560,16 @@ class Parser:
 
         if token.type == "IDENTIFIER":
             self._consume(expected_type="IDENTIFIER")
-            return [RandNode("IDENTIFIER", token.value)]  # Return a list with a single identifier node
+            return RandNode("IDENTIFIER", token.value)  # Return a list with a single identifier node
         elif token.value == "(":
             self._consume("(")
             # Check if next is ')' for an empty tuple '()' or if it's a Vl
             if self._peek() and self._peek().value == ")":
                 self._consume(")")
-                return []  # Return an empty  node
+                return BracketNode()
             elif self._peek() and self._peek().type == "IDENTIFIER": 
                 # This indicates the start of Vl
-                Vls:list[ASTNode] = self._parse_Vl() # Vl will build its own node(s)
+                Vls:CommaNode = self._parse_Vl() # Vl will build its own node(s)
                 self._consume(")")
                 return Vls  # Return the list of variable bindings from Vl
             else: # Content inside () but not IDENTIFIER and not ')'
@@ -586,7 +591,7 @@ class Parser:
         # First identifier is mandatory for Vl
         first_id_token = self._peek()
         if not (first_id_token and first_id_token.type == "IDENTIFIER"):
-            return []
+            raise SyntaxError(f"Syntax error in line {first_id_token.line if first_id_token else 'N/A'}: IDENTIFIER expected at the start of variable list.")
         
         Vls:list[ASTNode] = [RandNode("IDENTIFIER", first_id_token.value)]  # Start with the first identifier
         self._consume(expected_type="IDENTIFIER")
@@ -601,7 +606,7 @@ class Parser:
             Vls.append(RandNode("IDENTIFIER", next_id_token.value))  # Append the next identifier
             self._consume(expected_type="IDENTIFIER") 
             
-        return Vls
+        return CommaNode(Vls)
 
 
 
