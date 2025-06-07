@@ -1,7 +1,7 @@
 from .node_registry import register_node
 from app.ast_nodes import ASTNode, Closure
 
-@register_node
+@register_node()
 class Istruthvalue(ASTNode):
     """
     Represents a truth value check in the AST.
