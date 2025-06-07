@@ -47,4 +47,21 @@ class RandNode(ASTNode):
         Print the RandNode in a readable format.
         :param prefix: The indentation level for pretty printing.
         """
-        print(f"{prefix}{self.value}")
+        rand_type = ""
+        if self.type == "IDENTIFIER":
+            rand_type = "ID"
+        elif self.type == "INTEGER":
+            rand_type = "INT"
+        elif self.type == "STRING":
+            rand_type = "STR"
+        elif self.type == "TRUE":
+            rand_type = "True"
+        elif self.type == "FALSE":
+            rand_type = "BOOL"
+        elif self.type == "NIL":
+            rand_type = "NIL"
+        elif self.type == "DUMMY":
+            rand_type = "DUMMY"
+        else:
+            rand_type = f"Unknown({self.type})"
+        print(f"{prefix}<{rand_type}: {self.value}>")

@@ -88,7 +88,38 @@ class TestInterpreter(unittest.TestCase):
                         -> 'bad strings'
                     | (P (Stern S1, Stern S2) aug ((Stem S1) @Conc (Stem S2)))
                 in Print ( Pairs ('abc','def'))
-             ""","(ad, be, cf)")
+             ""","(ad, be, cf)"),
+             ("""
+               let rec Rev S =
+                    S eq '' -> ''
+                    | (Rev(Stern S)) @Conc (Stem S )
+                within
+                    Pairs S1 S2 =
+                    not (Isstring S1 & Isstring S2) -> 'both args not strings'
+                    | P (Rev S1) (Rev S2)
+                    where rec P S1 S2 =
+                    S1 eq '' & S2 eq '' -> nil
+                    | (Stern S1 eq '' & Stern S2 ne '') or
+                    (Stern S1 ne '' & Stern S2 eq '')
+                        -> 'bad strings'
+                    | (P (Stern S1) (Stern S2) aug ((Stem S1) @Conc (Stem S2)))
+                in Print ( Pairs 'abc' 'def')"""
+              , "(ad, be, cf)"),
+              ("""
+                let rec Rev S =
+                    S eq '' -> ''
+                    | (Rev(Stern S)) @Conc (Stem S )
+                in let
+                    Pairs (S1,S2) = P (Rev S1, Rev S2)
+                    where rec P (S1, S2) =
+                    S1 eq '' & S2 eq '' -> nil
+                    |  (fn L. P (Stern S1, Stern S2) aug ((Stem S1) @Conc (Stem S2)))
+                        nil
+                    
+
+                in Print ( Pairs ('abc','def'))"""
+               ,"(ad, be, cf)"
+               )
         ]
 
         for source_code, answer in source_codes:
@@ -147,3 +178,6 @@ class TestInterpreter(unittest.TestCase):
             run_interpreter(source_code)
             output = mock_stdout.getvalue().strip()
             self.assertEqual(output, answer)
+
+
+    

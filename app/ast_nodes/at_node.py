@@ -39,7 +39,7 @@ class AtNode(ASTNode):
         Print the 'at' node in a readable format.
         :param prefix: The indentation level for pretty printing.
         """
-        print(f"{prefix}AtNode:")
-        self.Ap.print(prefix + "*")
-        self.identifier.print(prefix + "*")
-        self.R.print(prefix + "*")
+        print(f"{prefix}@")
+        self.Ap.print(prefix + ". ")
+        self.identifier.print(prefix + ". ")
+        self.R.print(prefix + ". ")

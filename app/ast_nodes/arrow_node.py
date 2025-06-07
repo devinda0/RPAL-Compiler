@@ -29,7 +29,7 @@ class ArrowNode(ASTNode):
         Print the 'arrow' node in a readable format.
         :param prefix: The indentation level for pretty printing.
         """
-        print(f"{prefix}ArrowNode:")
-        self.B.print(prefix + "*")
-        self.true_branch.print(prefix + "*")
-        self.false_branch.print(prefix + "*")
+        print(f"{prefix}->")
+        self.B.print(prefix + ". ")
+        self.true_branch.print(prefix + ". ")
+        self.false_branch.print(prefix + ". ")

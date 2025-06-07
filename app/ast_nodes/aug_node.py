@@ -32,6 +32,6 @@ class AugNode(ASTNode):
         Print the 'aug' node in a readable format.
         :param prefix: The indentation level for pretty printing.
         """
-        print(f"{prefix}AugNode:")
-        self.Ta.print(prefix + "*")
-        self.Tc.print(prefix + "*")
+        print(f"{prefix}aug")
+        self.Ta.print(prefix + ". ")
+        self.Tc.print(prefix + ". ")
