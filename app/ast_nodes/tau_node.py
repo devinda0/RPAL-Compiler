@@ -53,7 +53,7 @@ class TauClosure(Closure):
         return self.T
     
     def __str__(self):
-        return f"({', '.join(str(ta) for ta in self.T)})"
+        return f"({', '.join(str(ta.evaluate(self.env) if isinstance(ta,ASTNode) else ta) for ta in self.T)})"
     
 class TauNodeGetter(ASTNode):
     def __init__(self, Tas:list[ASTNode]):
