@@ -1,5 +1,5 @@
 from .base import ASTNode, Closure
-from .node_registry import register_node
+from .functions.node_registry import register_node
 from .let_node import LetNode
 from .lambda_node import LambdaNode
 from .where_node import WhereNode
@@ -16,7 +16,6 @@ from .rec_node import RecNode
 from .fcn_form_node import FcnFormNode
 from .equal_node import EqualNode
 from .ystar_node import YStarNode
-from .print import Print
 
 __all__ = [
     "ASTNode",

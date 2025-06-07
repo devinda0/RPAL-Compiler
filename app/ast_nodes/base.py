@@ -41,4 +41,4 @@ class Closure:
         self.env = env
 
     def __str__(self):
-        return f"<Closure>"
+        return f"<Closure >"

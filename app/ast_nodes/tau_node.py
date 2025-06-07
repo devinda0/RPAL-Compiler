@@ -32,7 +32,7 @@ class TauNode(ASTNode):
             ta.print(prefix + "*")
 
     def __str__(self):
-        return f"({', '.join(str(ta) for ta in self.T)})"
+        return f"({', '.join(ta for ta in self.T)})"
     
 
 class TauClosure(Closure):
@@ -51,6 +51,9 @@ class TauClosure(Closure):
     
     def get(self):
         return self.T
+    
+    def __str__(self):
+        return f"({', '.join(str(ta) for ta in self.T)})"
     
 class TauNodeGetter(ASTNode):
     def __init__(self, Tas:list[ASTNode]):

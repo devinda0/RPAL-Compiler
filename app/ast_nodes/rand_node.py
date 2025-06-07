@@ -1,5 +1,5 @@
 from .base import ASTNode
-from .node_registry import get_node_class
+from .functions.node_registry import get_node_class
 
 class RandNode(ASTNode):
     def __init__(self, type: str, value: str|int|bool|None): # Adjusted type hint for value

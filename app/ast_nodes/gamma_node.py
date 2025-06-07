@@ -31,9 +31,6 @@ class GammaNode(ASTNode):
         elif len(closure.params) == 1:
             if isinstance(arguments, list):
                 if len(arguments) != 1:
-
-                    print(f"Closure params: {closure.params}")
-                    print(f"Arguments: {arguments}")
                     raise ValueError(f"Expected a single argument for closure, but got {len(arguments)}.")
                 arguments = arguments[0]
             new_env[closure.params[0]] = arguments
@@ -45,7 +42,7 @@ class GammaNode(ASTNode):
             if len(arguments.get()) != len(closure.params):
                 raise ValueError(f"Expected {len(closure.params)} arguments for closure, but got {len(arguments)}.")
             for i, param in enumerate(closure.params):
-                new_env[param] = arguments.get()[i]
+                new_env[param] = arguments.get()[i].evaluate(arguments.env)
             return closure.body.evaluate(new_env)
         else:
             raise ValueError(f"Unexpected number of parameters in closure: {len(closure.params)}.")
