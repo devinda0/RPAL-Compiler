@@ -4,3 +4,6 @@ from .is_string import Isstring
 from .concact import Conc
 from .stem import Stem
 from .is_tuple import Istuple
+from .is_function import Isfunction
+from .is_integer import Isinteger
+from .is_truthvalue import Istruthvalue
