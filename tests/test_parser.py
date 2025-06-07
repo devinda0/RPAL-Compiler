@@ -57,8 +57,7 @@ class TestParser(unittest.TestCase):
         self.assertIsInstance(ast, LetNode, "Expected ASTNode type for let expression")
         self.assertIsInstance(ast.E, RandNode, "Expected expression in let to be a RandNode")
         self.assertIsInstance(ast.D, EqualNode, "Expected D in let to be an OperatorNode")
-        self.assertEqual(len(ast.D.left),1, "Expected D.left to be a single identifier")
-        self.assertEqual(ast.D.left[0].value, "x", "Expected identifier in let expression to be 'x'")
+        self.assertEqual(ast.D.left.value, "x", "Expected identifier in let expression to be 'x'")
         self.assertEqual(ast.D.right.value, 10, "Expected value in let expression to be '10'")
         self.assertEqual(ast.E.value, "x", "Expected expression in let to be 'x'")
 

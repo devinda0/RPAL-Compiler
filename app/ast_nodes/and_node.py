@@ -1,3 +1,5 @@
+from app.ast_nodes import TauNode
+from app.ast_nodes.comma_node import CommaNode
 from .base import ASTNode
 from .equal_node import EqualNode
 
@@ -12,10 +14,10 @@ class AndNode(ASTNode):
     def standerdize(self):
         standardized_Drs = [dr.standerdize() for dr in self.Drs]
         
-        return EqualNode(
-             left=[dr.left for dr in standardized_Drs], # This is list[ASTNode]
-             right=[dr.right for dr in standardized_Drs] # This is list[ASTNode], but EqualNode expects ASTNode for right
-        )
+        left = CommaNode([dr.left for dr in standardized_Drs])
+        right = TauNode([dr.right for dr in standardized_Drs])
+
+        return EqualNode(left, right)
 
 
     def evaluate(self, env):

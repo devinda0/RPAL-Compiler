@@ -544,7 +544,7 @@ class Parser:
                 # If next is not a comma or IDENTIFIER, it's a simple variable binding
                 self._consume("=")
                 E:ASTNode = self._parse_E()
-                return EqualNode([RandNode("IDENTIFIER", identifier)], E)
+                return EqualNode(RandNode("IDENTIFIER", identifier), E)
         else:
             raise SyntaxError(f"Syntax error in line {token.line}: IDENTIFIER or '(' expected for a definition.")
 
