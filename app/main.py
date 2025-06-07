@@ -12,8 +12,8 @@ if __name__ == "__main__":
 
     parser = argparse.ArgumentParser()
     parser.add_argument("file", type=str, help="The file to parse and evaluate")
-    parser.add_argument("--ast", action="store_true", help="Print the AST structure")
-    parser.add_argument("--st", action="store_true", help="Print the standardized AST")
+    parser.add_argument("-ast", action="store_true", help="Print the AST structure")
+    parser.add_argument("-st", action="store_true", help="Print the standardized AST")
     args = parser.parse_args()
     
     with open("test.rpal", 'r') as file:
