@@ -2,7 +2,7 @@ from app.ast_nodes.tau_node import TauClosure
 from .node_registry import register_node
 from app.ast_nodes import ASTNode, Closure
 
-@register_node
+@register_node()
 class Order(ASTNode):
     """
     Represents an order operation in the AST.
