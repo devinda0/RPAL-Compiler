@@ -26,7 +26,7 @@ class Print(ASTNode):
         Print the print node in a readable format.
         :param prefix: The indentation level for pretty printing.
         """
-        print(f"{prefix}Print:")
+        print(f"{prefix}Print")
 
 
 class PrintExpression(ASTNode):

@@ -51,4 +51,4 @@ class RecNode(ASTNode):
         :param prefix: The indentation level for pretty printing.
         """
         print(f"{prefix}rec")
-        self.Db.print(prefix + ". ")
+        self.Db.print(prefix + ".")

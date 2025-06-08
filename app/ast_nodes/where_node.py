@@ -34,6 +34,6 @@ class WhereNode(ASTNode):
         Print the 'where' node in a readable format.
         :param prefix: The indentation level for pretty printing.
         """
-        print(f"{prefix}where:")
-        self.T.print(prefix + ". ")
-        self.Dr.print(prefix + ". ")
+        print(f"{prefix}where")
+        self.T.print(prefix + ".")
+        self.Dr.print(prefix + ".")

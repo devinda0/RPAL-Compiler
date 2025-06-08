@@ -29,7 +29,7 @@ class TauNode(ASTNode):
         """
         print(f"{prefix}tau")
         for ta in self.T:
-            ta.print(prefix + ". ")
+            ta.print(prefix + ".")
 
     def __str__(self):
         return f"({', '.join(ta for ta in self.T)})"
@@ -86,6 +86,6 @@ class TauNodeGetter(ASTNode):
         Print the 'tau' type node in a readable format.
         :param prefix: The indentation level for pretty printing.
         """
-        print(f"{prefix}TauNodeType:")
+        print(f"{prefix}TauNodeType")
         for ta in self.T:
-            ta.print(prefix + ". ")
+            ta.print(prefix + ".")

@@ -31,4 +31,4 @@ class AndNode(ASTNode):
         """
         print(f"{prefix}and")
         for dr in self.Drs:
-            dr.print(prefix + ". ")
+            dr.print(prefix + ".")

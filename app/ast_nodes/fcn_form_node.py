@@ -30,9 +30,9 @@ class FcnFormNode(ASTNode):
         Print the function form node in a readable format.
         :param prefix: The indentation level for pretty printing.
         """
-        print(f"{prefix}fcn_form:")
-        self.identifier.print(prefix + ". ")
+        print(f"{prefix}fcn_form")
+        self.identifier.print(prefix + ".")
         for vb in self.Vbs:
-            vb.print(prefix + ". ")
-        self.E.print(prefix + ". ")
+            vb.print(prefix + ".")
+        self.E.print(prefix + ".")
 

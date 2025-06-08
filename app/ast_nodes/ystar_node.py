@@ -109,4 +109,4 @@ class YStarNode(ASTNode):
         Print the Y* node in a readable format.
         :param prefix: The indentation level for pretty printing.
         """
-        print(f"{prefix}Y*")
+        print(f"{prefix}<Y*>")

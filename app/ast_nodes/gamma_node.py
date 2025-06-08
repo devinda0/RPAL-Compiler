@@ -53,6 +53,6 @@ class GammaNode(ASTNode):
         Print the 'gamma' node in a readable format.
         :param prefix: The indentation level for pretty printing.
         """
-        print(f"{prefix}gamma:")
-        self.left.print(prefix + ". ")
-        self.right.print(prefix + ". ")
+        print(f"{prefix}gamma")
+        self.left.print(prefix + ".")
+        self.right.print(prefix + ".")

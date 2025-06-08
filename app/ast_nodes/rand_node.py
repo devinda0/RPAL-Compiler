@@ -64,4 +64,4 @@ class RandNode(ASTNode):
             rand_type = "DUMMY"
         else:
             rand_type = f"Unknown({self.type})"
-        print(f"{prefix}<{rand_type}: {self.value}>")
+        print(f"{prefix}<{rand_type}:{self.value}>")

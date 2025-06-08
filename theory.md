@@ -12,13 +12,13 @@ It builds a parse tree (or abstract syntax tree) based on those rules.
 
 
 ## TG and CFG. ##
-✅ The structure (shape) of the derivation tree is the same in TG and CFG.
+The structure (shape) of the derivation tree is the same in TG and CFG.
 But...
 
-🔥 TG often shows only the translation output, not all the intermediate steps.
+TG often shows only the translation output, not all the intermediate steps.
 That’s why it looks shorter or more compact — because it focuses on the meaning, not just the syntax.
 
-🧠 Think of it like this:
+Think of it like this:
 1. CFG Tree (Full syntax tree)
 Shows:
 
@@ -42,7 +42,7 @@ Edit
 +
 ├── i
 └── i
-✅ Cleaner, because it skips all the intermediate symbols and focuses on what the computation means (postfix or AST).
+Cleaner, because it skips all the intermediate symbols and focuses on what the computation means (postfix or AST).
 
 
 ## parser:

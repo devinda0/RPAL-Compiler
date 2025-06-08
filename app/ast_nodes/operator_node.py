@@ -78,6 +78,6 @@ class OperatorNode(ASTNode):
         :param prefix: The indentation level for pretty printing.
         """
         print(f"{prefix}{self.operator}")
-        self.left.print(prefix + ". ")
+        self.left.print(prefix + ".")
         if self.right:
-            self.right.print(prefix + ". ")
+            self.right.print(prefix + ".")

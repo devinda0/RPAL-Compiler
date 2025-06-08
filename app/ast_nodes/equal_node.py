@@ -36,16 +36,16 @@ class EqualNode(ASTNode):
         """
         print(f"{prefix}=")
         if isinstance(self.left, list):
-            print(f"{prefix}. ,")
+            print(f"{prefix}.,")
             for l in self.left:
-                l.print(prefix + ". . ")
+                l.print(prefix + "..")
         else:
-            self.left.print(prefix + ". ")
+            self.left.print(prefix + ".")
         
         if isinstance(self.right, list):
-            print(f"{prefix}. ,")
+            print(f"{prefix}.,")
             for r in self.right:
-                r.print(prefix + ". . ")
+                r.print(prefix + "..")
         else:
-            self.right.print(prefix + ". ")
+            self.right.print(prefix + ".")
 

@@ -38,5 +38,5 @@ class WithinNode(ASTNode):
         :param prefix: The indentation level for pretty printing.
         """
         print(f"{prefix}within")
-        self.Da.print(prefix + ". ")
-        self.D.print(prefix + ". ")
+        self.Da.print(prefix + ".")
+        self.D.print(prefix + ".")

@@ -1,103 +1,75 @@
-# RPAL-Compiler 🧠⚙️
+# RPAL Compiler
 
-This project is a compiler for **RPAL (Right-reference Pure Applicative Language)** written in Python. It takes RPAL source code as input, lexes and parses it, builds an abstract syntax tree (AST), performs semantic analysis, and generates code.
+## Project Information
+- **Course:** Programming Languages
+- **Project:** RPAL Compiler Implementation
+- **Students:**
+    - Devinda Dilshan (220126M)
+    - W.A.K. Indunil (220240G)
 
-## 🧩 Project Structure
+## Overview
+This project is an implementation of a compiler for the RPAL (Right-reference Pedagogical Algorithmic Language) developed in Python. It includes a lexical analyzer, a recursive descent parser, Abstract Syntax Tree (AST) construction, AST to Standardized Tree (ST) conversion, and a CSE (Control Stack Environment) machine for program execution.
 
-```bash
-RPAL-COMPILER/
-├── app/
-│   ├── ast_nodes/                  # Contains AST node definitions
-│   │   ├── base.py                 # Base class for AST nodes
-│   │   ├── bracket_node.py         # Represents bracket nodes
-│   │   ├── comma_node.py           # Represents comma-separated nodes
-│   │   ├── equal_node.py           # Represents equality expressions
-│   │   ├── fcn_form_node.py        # Represents function forms
-│   │   ├── gamma_node.py           # Represents function application nodes
-│   │   ├── lambda_node.py          # Represents lambda expressions
-│   │   ├── let_node.py             # Represents 'let' expressions
-│   │   ├── operator_node.py        # Represents operator expressions
-│   │   ├── rand_node.py            # Represents literals and identifiers
-│   │   ├── rec_node.py             # Represents recursive definitions
-│   │   ├── tau_node.py             # Represents tuples
-│   │   ├── where_node.py           # Represents 'where' expressions
-│   │   ├── within_node.py          # Represents 'within' expressions
-│   │   ├── ystar_node.py           # Represents Y* combinator
-│   │   └─- functions/              # Contains built-in functions
-│   │       ├── concact.py          # Concatenation function
-│   │       ├── is_function.py      # Checks if a value is a function
-│   │       ├── is_integer.py       # Checks if a value is an integer
-│   │       ├── is_string.py        # Checks if a value is a string
-│   │       ├── is_truthvalue.py    # Checks if a value is a truth value
-│   │       ├── is_tuple.py         # Checks if a value is a tuple
-│   │       ├── node_registry.py    # Registry for AST nodes
-│   │       ├── order.py            # Order function for tuples
-│   │       ├── print.py            # Print function
-│   │       ├── stem.py             # Stem function
-│   │       └─- stern.py            # Stern function
-│   ├── lexer.py                    # Lexical analyzer for tokenizing input
-│   ├── parser.py                   # Syntactic parser to build the AST
-│   ├── token.py                    # Token definitions
-│   ├── main.py                     # Entry point for the compiler
-│   └── __init__.py                 # Package initializer
-│
-├── tests/                          # Unit tests for the compiler
-│   ├── test_lexer.py               # Tests for lexical analysis
-│   ├── test_parser.py              # Tests for parsing
-│   └─- test_interpreter.py         # Tests for interpreter functionality
-│
-├── test.rpal                       # Example RPAL source code
-├── theory.md                       # RPAL theory and concepts
-├── .gitignore                      # Git ignore file
-└── README.md                       # Project documentation
-```
+## How to Run
 
+The compiler is executed from the command line using the `myrpal.py` script.
 
+**Prerequisites:**
+- Python 3.x
+- `make` (optional, if using the Makefile for convenience) - Can be installed via Git for Windows (Git Bash), MinGW, Chocolatey (`choco install make`), or WSL on Windows.
 
-## 🚀 How to Run
+**Execution Commands:**
 
-Make sure you have Python 3 installed. Then:
+1.  **Basic Execution:**
+    To run an RPAL file (e.g., `your_file.rpal` located in the `testCodes` directory):
+    ```bash
+    python .\myrpal.py testCodes/your_file.rpal
+    ```
 
-1. Clone the repo:
-```bash
-git clone https://github.com/your-username/rpal-compiler.git
-cd rpal-compiler
-```
+2.  **View Abstract Syntax Tree (AST):**
+    To execute and also display the Abstract Syntax Tree:
+    ```bash
+    python .\myrpal.py -ast testCodes/your_file.rpal
+    ```
 
-2. Run the compiler:
-```bash
-python3 -m app.main <input.rpal>
-```
+3.  **View Standardized Tree (ST):**
+    To execute and also display the Standardized Tree:
+    ```bash
+    python .\myrpal.py -st testCodes/your_file.rpal
+    ```
 
-### Optional Arguments
+**Using the Makefile (Optional):**
 
-- `-st`: Prints the standardized tree.
-- `-ast`: Prints the abstract syntax tree.
+If you have `make` installed and are in a compatible terminal (like Git Bash on Windows):
 
+-   Run a specific file:
+    ```bash
+    make test FILE=testCodes/your_file.rpal
+    ```
+-   Run with AST output:
+    ```bash
+    make ast FILE=testCodes/your_file.rpal
+    ```
+-   Run with ST output:
+    ```bash
+    make st FILE=testCodes/your_file.rpal
+    ```
+-   Clean Python cache files:
+    ```bash
+    make clean
+    ```
+-   See all Makefile options:
+    ```bash
+    make help
+    ```
 
-## 🛠️ Features
+## Key Components
+- **Lexer (`app/lexer.py`):** Tokenizes RPAL source code.
+- **Parser (`app/parser.py`):** Builds an Abstract Syntax Tree (AST) from tokens.
+- **AST Nodes (`app/ast_nodes/`):** Classes representing language constructs, each with `standardize()`, `evaluate()`, and `print()` methods.
+- **Standardization:** Converts the AST to a Standardized Tree (ST) for simpler evaluation.
+- **CSE Machine:** Implemented via the `evaluate()` methods in AST nodes, managing environments and closures.
+- **Node Registry (`app/ast_nodes/functions/node_registry.py`):** Manages built-in functions.
 
-Lexical Analysis — Converts source code into tokens.
-Parsing — Constructs an AST from token stream.
-Semantic Analysis — Ensures type rules and bindings.
-Code Generation — Outputs intermediate or target code.
-
-## 📦 Dependencies
-
-This project uses pure Python. No external libraries are required.
-
-## 🧪 Testing
-
-Unit tests are included for all major components:
-
-- Lexer
-- Parser
-- Code Generator
-- Semantic Analyzer
-
-Run them using:
-```bash
-python3 -m unittest discover tests
-```
-
-
+---
+This README provides a quick guide to getting the RPAL compiler running and understanding its basic operation. For detailed design and implementation, please refer to the full `Report.md`.

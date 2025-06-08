@@ -25,7 +25,7 @@ class Stem(ASTNode):
         Print the Stem node in a readable format.
         :param prefix: The indentation level for pretty printing.
         """
-        print(f"{prefix}Stem:")
+        print(f"{prefix}Stem")
 
 
 class StemEvaluator(ASTNode):

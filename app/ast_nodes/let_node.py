@@ -35,6 +35,6 @@ class LetNode(ASTNode):
         Print the 'let' node in a readable format.
         :param prefix: The indentation level for pretty printing.
         """
-        print(f"{prefix}let:")
-        self.D.print(prefix + ". ")
-        self.E.print(prefix + ". ")
+        print(f"{prefix}let")
+        self.D.print(prefix + ".")
+        self.E.print(prefix + ".")

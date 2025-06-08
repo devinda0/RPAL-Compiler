@@ -24,7 +24,7 @@ class Isstring(ASTNode):
         Print the is_string node in a readable format.
         :param prefix: The indentation level for pretty printing.
         """
-        print(f"{prefix}IsString:")
+        print(f"{prefix}Isstring:")
 
 
 class IsStringEvaluator(ASTNode):

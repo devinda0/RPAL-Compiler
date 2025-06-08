@@ -33,5 +33,5 @@ class AugNode(ASTNode):
         :param prefix: The indentation level for pretty printing.
         """
         print(f"{prefix}aug")
-        self.Ta.print(prefix + ". ")
-        self.Tc.print(prefix + ". ")
+        self.Ta.print(prefix + ".")
+        self.Tc.print(prefix + ".")

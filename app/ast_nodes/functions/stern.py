@@ -25,7 +25,7 @@ class Stern(ASTNode):
         Print the Stern node in a readable format.
         :param prefix: The indentation level for pretty printing.
         """
-        print(f"{prefix}Stern:")
+        print(f"{prefix}Stern")
 
 class SternEvaluator(ASTNode):
     def __init__(self):

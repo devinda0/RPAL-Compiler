@@ -24,7 +24,7 @@ class Conc(ASTNode):
         Print the Conc node in a readable format.
         :param prefix: The indentation level for pretty printing.
         """
-        print(f"{prefix}Conc:")
+        print(f"{prefix}Conc")
 
 
 class ConcEvaluator(ASTNode):
